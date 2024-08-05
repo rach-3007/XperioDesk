@@ -1,12 +1,12 @@
-import React from 'react'
-import UserViewAllBookings from '../Components/UserViewAllBookings/UserViewAllBookings'
+import React from "react";
+import UserViewAllBookings from "../Components/UserViewAllBookings/UserViewAllBookings";
 
 const UserViewAllBookingsPage = () => {
   return (
     <div>
-      <UserViewAllBookings></UserViewAllBookings>
+      <UserViewAllBookings />
     </div>
-  )
-}
+  );
+};
 
-export default UserViewAllBookingsPage
+export default UserViewAllBookingsPage;

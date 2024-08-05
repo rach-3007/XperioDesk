@@ -8,7 +8,7 @@ const ViewOrEditBooking: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const [booking, setBooking] = useState<any>(null); 
+  const [booking, setBooking] = useState<any>(null);
   const [editable, setEditable] = useState<boolean>(false);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const ViewOrEditBooking: React.FC = () => {
   const handleSave = () => {
     if (booking) {
       updateBooking(booking);
-      navigate("/"); 
+      navigate("/");
     }
   };
 

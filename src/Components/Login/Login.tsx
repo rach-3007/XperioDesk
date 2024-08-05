@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Typography,
@@ -7,14 +6,26 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { bookings } from "../../data";
 import styles from "./Login.module.css";
 
 const Login: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate("/home");
+    const user = bookings.find((booking) => booking.emailId === email);
+
+    if (user) {
+      localStorage.setItem("userRole", user.role);
+      localStorage.setItem("username", user.employeeName);
+      navigate("/home");
+    } else {
+      setError("Invalid email. Please try again.");
+    }
   };
 
   return (
@@ -39,6 +50,8 @@ const Login: React.FC = () => {
             label="Email Address"
             variant="outlined"
             margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{
               mb: 2,
               "& label": { color: "black" },
@@ -48,6 +61,7 @@ const Login: React.FC = () => {
               },
             }}
           />
+          {error && <Typography color="error">{error}</Typography>}
           <TextField
             fullWidth
             label="Password"

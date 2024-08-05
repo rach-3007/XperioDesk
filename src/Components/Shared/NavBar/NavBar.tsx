@@ -1,13 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom"; 
-import { AccountCircle } from "@mui/icons-material"; 
-import styles from "./NavBar.module.css"; 
+import { Link } from "react-router-dom";
+import { AccountCircle } from "@mui/icons-material";
+import styles from "./NavBar.module.css";
 
-interface NavBarProps {
-  username: string;
-}
+const NavBar: React.FC = () => {
+  const username = localStorage.getItem("username") || "User";
+  const role = localStorage.getItem("userRole") || "user";
 
-const NavBar: React.FC<NavBarProps> = ({ username }) => {
+  const bookingsPath =
+    role === "admin" ? "/admin-view-all-bookings" : "/user-view-all-bookings";
+
   return (
     <header className={styles.navbar}>
       <span className={styles.logo}>XperioDesk</span>
@@ -15,7 +17,7 @@ const NavBar: React.FC<NavBarProps> = ({ username }) => {
         <Link className={styles.navLink} to="/">
           Home
         </Link>
-        <Link className={styles.navLink} to="/admin-view-all-bookings">
+        <Link className={styles.navLink} to={bookingsPath}>
           My Bookings
         </Link>
         <div className={styles.profile}>
