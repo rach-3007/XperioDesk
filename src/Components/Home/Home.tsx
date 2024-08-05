@@ -1,8 +1,8 @@
-import React from 'react';
-import NavBar from '../Shared/NavBar/NavBar'; 
+import React from "react";
+import NavBar from "../Shared/NavBar/NavBar";
 
 const HomePage: React.FC = () => {
-  const username = 'User'; 
+  const username = "User";
   return (
     <div className="homepage">
       <NavBar username={username} />

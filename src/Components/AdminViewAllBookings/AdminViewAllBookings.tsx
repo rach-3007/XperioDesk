@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Box,
@@ -19,7 +18,7 @@ import {
 } from "@mui/material";
 import { FilterList, Download, Add, ArrowDropDown } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { bookings } from "../../data"; 
+import { bookings } from "../../data";
 import styles from "./AdminViewAllBookings.module.css";
 
 const AdminViewAllBookings: React.FC = () => {
@@ -51,7 +50,10 @@ const AdminViewAllBookings: React.FC = () => {
     setPage(0);
   };
 
-  const handleFilterClick = (event: React.MouseEvent<HTMLElement>, column: string) => {
+  const handleFilterClick = (
+    event: React.MouseEvent<HTMLElement>,
+    column: string
+  ) => {
     setAnchorEl(event.currentTarget);
     setCurrentColumn(column);
   };
@@ -68,7 +70,10 @@ const AdminViewAllBookings: React.FC = () => {
     });
   };
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: string
+  ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
@@ -125,22 +130,31 @@ const AdminViewAllBookings: React.FC = () => {
         </Box>
       </Box>
       <Box className={styles.tableContainer}>
-      <Typography variant="h4" gutterBottom sx={{ color: '#0F172A' }}>
-  All Bookings
-</Typography>
+        <Typography variant="h4" gutterBottom sx={{ color: "#0F172A" }}>
+          All Bookings
+        </Typography>
         <TableContainer component={Paper} className={styles.tablePaper}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell className={styles.headerCell}>Serial No</TableCell>
-                {["employeeName", "expId", "seatNumber", "office", "dateOfBooking", "status"].map((column) => (
+                {[
+                  "employeeName",
+                  "expId",
+                  "seatNumber",
+                  "office",
+                  "dateOfBooking",
+                  "status",
+                ].map((column) => (
                   <TableCell key={column} className={styles.headerCell}>
                     <TableSortLabel
                       active={orderBy === column}
                       direction={orderBy === column ? order : "asc"}
                       onClick={(event) => handleRequestSort(event, column)}
                     >
-                      {column.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      {column
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
                       <IconButton
                         size="small"
                         onClick={(event) => handleFilterClick(event, column)}
