@@ -1,0 +1,57 @@
+.navbar {
+    display: grid;
+    grid-template-columns: 1fr repeat(3, auto); 
+    align-items: center;
+    background-color: #0F172A;
+    padding: 0 20px;
+    height: 60px;
+    width: 100vw;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+  .logo {
+    grid-column: 1 / 2; 
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #FEFEFE;
+  }
+  
+  .navbarRight {
+    grid-column: 3 / 4;
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start; 
+  }
+  
+  .nav-link {
+    color: #FEFEFE;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    color: #FEFEFE;
+
+    text-decoration: underline;
+  }
+  
+  .profile {
+    display: flex;
+    align-items: center;
+    margin-right: 70px; /* Adjust margin to shift the profile container left */
+  }
+  
+  .username {
+    margin-right: 10px;
+    color: #FEFEFE;
+  }
+  
+  .profile-icon {
+    color: #FEFEFE;
+    font-size: 30px;
+    margin-right: -40px; /* Move the icon a bit to the left */
+  }
+  
+  
