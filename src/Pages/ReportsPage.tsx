@@ -1,5 +1,5 @@
 import React from "react";
-import AdminViewAllBookings from "../Components/AdminViewAllBookings/AdminViewAllBookings";
+import AdminViewAllBookings from "../Components/Reports/Reports";
 import NavBar from "../Components/Shared/NavBar/NavBar";
 const username = "User";
 const AdminViewAllBookingsPage: React.FC = () => {
