@@ -5,10 +5,9 @@ import NavBar from '../Components/Shared/NavBar/NavBar'
 const UserViewAllBookingsPage = () => {
   return (
     <div>
-      <NavBar username="Sethu"></NavBar>
-      <UserViewAllBookings></UserViewAllBookings>
+      <UserViewAllBookings />
     </div>
-  )
-}
+  );
+};
 
-export default UserViewAllBookingsPage
+export default UserViewAllBookingsPage;
