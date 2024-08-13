@@ -39,9 +39,9 @@ const MyBookings: React.FC = () => {
 
   return (
     <Box sx={{ p: 4, backgroundColor: '#f5f5f5', minHeight: '100vh',display:'flex', flexDirection:'column' }}>
-      <Box sx={{ backgroundColor: '#04122E',display:'flex', color: '#fff', p: 2,width:'100%',position:'absolute',top:0,left:0 }}>
+      {/* <Box sx={{ backgroundColor: '#04122E',display:'flex', color: '#fff', p: 2,width:'100%',position:'absolute',top:0,left:0 }}>
         <Typography sx={{pl:4}} variant="h4">My Bookings</Typography>
-      </Box>
+      </Box> */}
       <Box sx={{ mt: 10 }}>
         <Typography sx={{display:'flex',color:'#04122E', fontWeight:'1000',fontSize:'1.5rem' }} variant="h6">Seats</Typography>
         <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -75,11 +75,21 @@ const MyBookings: React.FC = () => {
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent:'space-between', mt: 2,py:1 }}>
                     {booking.actions.map((action, idx) => (
-                      <Button
-                        key={idx}
-                        variant={action === 'Cancel Booking' ? 'outlined' : 'contained'}
-                        sx={{backgroundColor:'#04122E', color:'white',fontSize:'1.1rem' }}
-                      >
+                       <Button
+                       key={idx}
+                       variant={action === 'Cancel Booking' ? 'outlined' : 'contained'}
+                       sx={{
+                         backgroundColor: action === 'Cancel Booking' ? 'white' : '#04122E',
+                         color: action === 'Cancel Booking' ? '#04122E' : 'white',
+                         borderColor: '#04122E',
+                         fontSize: '1.1rem',
+                         fontWeight:'bold',
+                         borderRadius:'0.5rem',
+                         '&:hover': {
+                           backgroundColor: action === 'Cancel Booking' ? '#f5f5f5' : '#04122E',
+                         },
+                       }}
+                     >
                         {action}
                       </Button>
                     ))}

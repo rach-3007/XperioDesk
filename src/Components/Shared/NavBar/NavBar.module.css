@@ -4,12 +4,13 @@
     align-items: center;
     background-color: #0F172A;
     padding: 0 20px;
-    height: 60px;
+    height: 15vh;
     width: 100vw;
     position: fixed; 
     top: 0;
     left: 0;
     z-index: 1000;
+    
 }
   .logo {
     grid-column: 1 / 2; 
@@ -26,12 +27,12 @@
     justify-content: flex-start; 
   }
   
-  .nav-link {
+  .navLink {
     color: #FEFEFE;
     text-decoration: none;
   }
   
-  .nav-link:hover {
+  .navLink:hover {
     color: #FEFEFE;
 
     text-decoration: underline;

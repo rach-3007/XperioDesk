@@ -15,7 +15,7 @@ const NavBar: React.FC<NavBarProps> = ({ username }) => {
         <Link className={styles.navLink} to="/">
           Home
         </Link>
-        <Link className={styles.navLink} to="/admin-view-all-bookings">
+        <Link className={styles.navLink} to="/user-view-all-bookings">
           My Bookings
         </Link>
         <div className={styles.profile}>
