@@ -19,7 +19,7 @@ import {
 import { FilterList, Download, Add, ArrowDropDown } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { bookings } from "../../data";
-import styles from "./AdminViewAllBookings.module.css";
+import styles from "./Reports.module.css";
 
 const AdminViewAllBookings: React.FC = () => {
   const [page, setPage] = useState(0);
@@ -226,4 +226,4 @@ const AdminViewAllBookings: React.FC = () => {
   );
 };
 
-export default AdminViewAllBookings;
+export default Reports;
