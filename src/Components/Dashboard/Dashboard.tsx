@@ -18,10 +18,10 @@ const Dashboard: React.FC = () => {
     <Box sx={{ display: 'flex' }}>
       <Sidebar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h4" gutterBottom>DASHBOARD</Typography>
+        <Typography style={{color:'#27314B'}} variant="h4" gutterBottom>DASHBOARD</Typography>
         <DashboardOverview/>
         <Box mt={4}>
-          <Typography variant="h6">Bookings</Typography>
+          <Typography style={{color:'#27314B'}} variant="h6">Bookings</Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
