@@ -11,17 +11,16 @@ import {
   TablePagination,
   IconButton,
   Popover,
-  Button,
   TableSortLabel,
   Typography,
   Paper,
 } from "@mui/material";
-import { FilterList, Download, Add, ArrowDropDown } from "@mui/icons-material";
+import { ArrowDropDown, Download, Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { bookings } from "../../data";
 import styles from "./Reports.module.css";
 
-const AdminViewAllBookings: React.FC = () => {
+const Reports: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -32,6 +31,7 @@ const AdminViewAllBookings: React.FC = () => {
     seatNumber: "",
     office: "",
     dateOfBooking: "",
+    loginStatus: "", // New filter
     status: "",
   });
   const [order, setOrder] = useState<"asc" | "desc">("asc");
@@ -79,7 +79,7 @@ const AdminViewAllBookings: React.FC = () => {
     setOrderBy(property);
   };
 
-  const handleRowClick = (booking: any) => {
+  const handleRowClick = (booking: Booking) => {
     navigate(`/view-or-edit-booking/${booking.id}`, { state: { booking } });
   };
 
@@ -144,6 +144,7 @@ const AdminViewAllBookings: React.FC = () => {
                   "seatNumber",
                   "office",
                   "dateOfBooking",
+                  "loginStatus", // New column added
                   "status",
                 ].map((column) => (
                   <TableCell key={column} className={styles.headerCell}>
@@ -185,6 +186,7 @@ const AdminViewAllBookings: React.FC = () => {
                     <TableCell>{booking.seatNumber}</TableCell>
                     <TableCell>{booking.office}</TableCell>
                     <TableCell>{booking.dateOfBooking}</TableCell>
+                    <TableCell>{booking.loginStatus}</TableCell> {/* New cell */}
                     <TableCell>{booking.status}</TableCell>
                   </TableRow>
                 ))}

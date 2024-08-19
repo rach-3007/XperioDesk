@@ -1,8 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./Pages/LoginPage";
-import AdminViewAllBookingsPage from "./Pages/ReportsPage";
-import UserViewAllBookingsPage from "./Pages/UserViewAllBookingsPage";
+
 import DashboardPage from "./Pages/DashboardPage";
+import AnalyticsPage from "./Pages/AnalyticsPage";
+import ReportsPage from "./Pages/ReportsPage";
+
+
+
 
 
 const App = () => {
@@ -15,6 +19,17 @@ const App = () => {
           path="//home"
           element={<DashboardPage />}
         />
+        <Route
+          path="/Analytics"
+          element={<AnalyticsPage/>}
+        />
+         <Route
+          path="/Reports"
+          element={<ReportsPage/>}
+        />
+        
+
+
        
       </Routes>
       

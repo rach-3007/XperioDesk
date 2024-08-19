@@ -5,6 +5,7 @@
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .header {
@@ -28,6 +29,7 @@
 .actions {
   display: flex;
   align-items: center;
+  margin-right: 25px;
 }
 
 .tableContainer {
@@ -36,15 +38,21 @@
   background-color: #ffffff;
   padding: 16px;
   height: calc(100vh - 160px);
-  width: 95vw;
-  overflow: auto;
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  box-sizing: border-box;
+
 }
 
 .tableContainer::-webkit-scrollbar {
   width: 3px;
   height: 8px;
 }
-
+.tableCell {
+  padding: 8px;
+  line-height: 1;
+  height: 4px; /* Adjust height to your preference */
+}
 .tableContainer::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
