@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Grid, Card, CardContent, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Grid, Card, CardContent, Typography, FormControl, MenuItem, Select } from "@mui/material";
 import BarChart from "./BarChart";
 import DoughNut from "./DoughNut";
 import PieChart from "./PieChart";
@@ -7,6 +7,8 @@ import SeatOccupancy from "./SeatOccupancy"; // Import SeatOccupancy component
 import { ChartOptions as ChartJSOptions, ScriptableContext } from "chart.js";
 
 import Navbar from "./Navbar";
+
+
 
 const Analytics: React.FC = () => {
   const barChartData1 = {
@@ -184,11 +186,9 @@ const Analytics: React.FC = () => {
           color: "#666",
           boxWidth: 10,
           padding: 20,
-          
         },
-       
       },
-      
+
       tooltip: {
         callbacks: {
           label: function (context) {
@@ -199,14 +199,14 @@ const Analytics: React.FC = () => {
         },
       },
     },
-   layout:{
-    padding: {
-      top: 0, // Adjust this value if you want to shift the entire chart content
-      right: 0,
-      bottom: 85,
-      left: 0,
+    layout: {
+      padding: {
+        top: 0, // Adjust this value if you want to shift the entire chart content
+        right: 0,
+        bottom: 85,
+        left: 0,
+      },
     },
-   },
     cutout: "70%",
   };
 
@@ -247,62 +247,112 @@ const Analytics: React.FC = () => {
     },
     cutout: "70%",
   };
+// dropdown
+const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string>('');
+
+  useEffect(() => {
+    // Replace with your actual API call
+    const fetchDropdownOptions = async () => {
+      try {
+        const response = await fetch('your_api_endpoint'); // Fetch data from your API
+        const data = await response.json();
+        setDropdownOptions(data.options); // Assuming your API response has an 'options' array
+        setSelectedOption(data.options[0]); // Set the first option as the default selected option
+      } catch (error) {
+        console.error('Error fetching dropdown options:', error);
+      }
+    };
+
+    fetchDropdownOptions();
+  }, []);
 
   return (
     <Box>
-      <Box sx={{ ml: 29, mb: 5 }}>
+      <Box sx={{ ml: 29, mb: 6 }}>
         <Navbar />
       </Box>
-      <Box sx={{ ml: 33 }}>
-       
 
+      <Box sx={{ ml: 33,mt:-4,mb:5 }}> 
+        <FormControl sx={{ minWidth: 100 }}>
+          <Select
+            value={selectedOption}
+            onChange={(event) => setSelectedOption(event.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Without label' }}
+          >
+            <MenuItem value="">
+              <em>Select an option</em>
+            </MenuItem>
+            {dropdownOptions.map((option) => (
+              <MenuItem key={option} value={option}>{option}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+      <Box sx={{ ml: 33 }}>
         <Grid container spacing={2}>
           {/* Row 1 */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent sx={{ height: "100%", padding: 2 }}>
-                <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Typography variant="h6" sx={{ paddingBottom: "16px" }}>
-                    Bar Chart 1
-                  </Typography>
-                  <Box sx={{ flex: 1 }}>
-                    <BarChart data={barChartData1} options={barChartOptions1} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
 
-          <Grid item xs={12} md={6}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent sx={{ height: "100%", padding: 2 }}>
-                <SeatOccupancy />
-              </CardContent>
-            </Card>
+          <Grid
+            container
+            sx={{ display: "flex", justifyContent: "space-around" }}
+          >
+            <Grid item xs={12} md={7}>
+              <Card sx={{ height: "100%" }}>
+                <CardContent sx={{ height: "100%", padding: 2 }}>
+                  <Box
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ paddingBottom: "16px" }}>
+                      Bar Chart 1
+                    </Typography>
+                    <Box sx={{ flex: 1 }}>
+                      <BarChart
+                        data={barChartData1}
+                        options={barChartOptions1}
+                      />
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={5}>
+              <Card sx={{ height: "100%" }}>
+                <CardContent sx={{ height: "100%", padding: 2 }}>
+                  <SeatOccupancy />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {/* Row 2 */}
-          <Grid container item xs={12}  spacing={3} sx={{ mt: 1, display:"flex",justifyContent:"space-around",  }}>
+          <Grid
+            container
+            item
+            xs={12}
+            spacing={3}
+            sx={{ mt: 1, display: "flex", justifyContent: "space-around" }}
+          >
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "80%",  }}>
+              <Card sx={{ height: "80%" }}>
                 <CardContent
                   sx={{
                     height: "100%",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    flexDirection:"column",
+                    flexDirection: "column",
                   }}
                 >
-                   <Typography variant="h6" align="left" sx={{ mt: 1,mr:35 }}> 
-        Pie Chart 
-      </Typography>
+                  <Typography variant="h6" align="left" sx={{ mt: 1, mr: 35 }}>
+                    Pie Chart
+                  </Typography>
                   <Box sx={{ width: "100%", height: "100%" }}>
                     <PieChart
                       options={{
@@ -316,7 +366,7 @@ const Analytics: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "80%",   }}>
+              <Card sx={{ height: "80%" }}>
                 <CardContent>
                   <Typography variant="h6">Doughnut Chart</Typography>
                   <DoughNut data={doughnutData1} options={doughnutOptions1} />
@@ -372,4 +422,4 @@ const Analytics: React.FC = () => {
   );
 };
 
-export default  Analytics;
+export default Analytics;

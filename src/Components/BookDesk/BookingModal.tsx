@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Dialog,
+  // DialogTitle,
   DialogContent,
   Tabs,
   Tab,
@@ -227,7 +228,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                       sx={{
                         marginTop: "20px",
                         backgroundColor: "#04122E",
-                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#0F0d21", // Slightly darker color on hover
+                        },
                       }}
                     >
                       Confirm
@@ -349,7 +352,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                       sx={{
                         marginTop: "20px",
                         backgroundColor: "#04122E",
-                        color: "white", // This is the magic line!
+                        "&:hover": {
+                          backgroundColor: "#0F0d21", // Slightly darker color on hover
+                        },
                       }}
                     >
                       Confirm
@@ -377,7 +382,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                       sx={{
                         marginTop: "20px",
                         backgroundColor: "#04122E",
-                        color: "white", // This is the magic line!
+                        "&:hover": {
+                          backgroundColor: "#0F0d21", // Slightly darker color on hover
+                        },
                       }}
                     >
                       Confirm

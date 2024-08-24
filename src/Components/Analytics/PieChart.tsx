@@ -8,7 +8,6 @@ import {
 } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
 const PieChart: React.FC = () => {
   const data = {
     labels: ['DU - 1', 'DU - 1', 'DU - 1', 'DU - 1'],
