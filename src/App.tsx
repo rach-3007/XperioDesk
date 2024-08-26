@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./Pages/HomePage";
 import LoginPage from "./Pages/LoginPage";
 import AdminViewAllBookingsPage from "./Pages/ReportsPage";
+import ViewOrEditBookingPage from "./Pages/ViewOrEditBookingPage";
 import UserViewAllBookingsPage from "./Pages/UserViewAllBookingsPage";
-import DashboardPage from "./Pages/DashboardPage";
+import Footer from "./Components/Shared/Footer/Footer";
 
 
 const App = () => {
@@ -10,12 +12,19 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        
+        <Route path="/home" element={<HomePage />} />
         <Route
-          path="//home"
-          element={<DashboardPage />}
+          path="/admin-view-all-bookings"
+          element={<AdminViewAllBookingsPage />}
         />
-       
+        <Route
+          path="//user-view-all-bookings"
+          element={<UserViewAllBookingsPage />}
+        />
+        <Route
+          path="/view-or-edit-booking/:id"
+          element={<ViewOrEditBookingPage />}
+        />
       </Routes>
       
 
