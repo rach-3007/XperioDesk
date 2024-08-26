@@ -309,7 +309,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
                     }}
                   >
                     <Typography variant="h6" sx={{ paddingBottom: "16px" }}>
-                      Bar Chart 1
+                      Bookings
                     </Typography>
                     <Box sx={{ flex: 1 }}>
                       <BarChart
@@ -323,8 +323,11 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             </Grid>
 
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "100%" }}>
+              <Card sx={{ height: "100%" , border:"none",boxShadow:"none"}}>
                 <CardContent sx={{ height: "100%", padding: 2 }}>
+                <Typography variant="h6" sx={{ paddingBottom: "16px",marginLeft:"35px" }}>
+                      Seat Occupancy
+                    </Typography>
                   <SeatOccupancy />
                 </CardContent>
               </Card>
@@ -340,7 +343,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             sx={{ mt: 1, display: "flex", justifyContent: "space-around" }}
           >
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "80%" }}>
+              <Card sx={{ height: "80%",  }}>
                 <CardContent
                   sx={{
                     height: "100%",
@@ -348,10 +351,11 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
                     alignItems: "center",
                     justifyContent: "center",
                     flexDirection: "column",
+                   
                   }}
                 >
                   <Typography variant="h6" align="left" sx={{ mt: 1, mr: 35 }}>
-                    Pie Chart
+                    Du Occupancy
                   </Typography>
                   <Box sx={{ width: "100%", height: "100%" }}>
                     <PieChart
@@ -368,7 +372,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             <Grid item xs={12} md={5}>
               <Card sx={{ height: "80%" }}>
                 <CardContent>
-                  <Typography variant="h6">Doughnut Chart</Typography>
+                  <Typography variant="h6">Today's Booking</Typography>
                   <DoughNut data={doughnutData1} options={doughnutOptions1} />
                 </CardContent>
               </Card>
@@ -380,7 +384,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             <Grid item xs={12} md={4}>
               <Card sx={{ height: "95%" }}>
                 <CardContent>
-                  <Typography variant="h6">Another Doughnut Chart</Typography>
+                  <Typography variant="h6">Today's Utilization rate</Typography>
                   <DoughNut data={doughnutData2} options={doughnutOptions2} />
                 </CardContent>
               </Card>
@@ -403,7 +407,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
                         alignItems: "center",
                       }}
                     >
-                      <Typography variant="h6">Bar Chart 2</Typography>
+                      <Typography variant="h6">Utilization rate</Typography>
                     </Box>
                     <Box sx={{ flex: 1 }}>
                       <BarChart
