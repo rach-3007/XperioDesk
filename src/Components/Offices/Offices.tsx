@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -8,6 +7,7 @@ import {
   Grid,
   Box,
 } from "@mui/material";
+import AddOfficeDrawer from "./AddOfficeDrawer";
 
 interface Office {
   id: number;
@@ -16,7 +16,7 @@ interface Office {
 }
 
 const officesData: Office[] = [
-  { id: 1, name: "Gaythri Office,  Techno Park", enabled: true },
+  { id: 1, name: "Gaythri Office", enabled: true },
   { id: 2, name: "Thejaswini", enabled: false },
 ];
 
@@ -29,6 +29,7 @@ const getInitials = (name: string): string => {
 
 const Offices: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>(officesData);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const toggleOfficeStatus = (id: number): void => {
     setOffices((prevOffices) =>
@@ -38,6 +39,14 @@ const Offices: React.FC = () => {
     );
   };
 
+  const handleOpenDrawer = () => {
+    setDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
+  };
+
   return (
     <>
       <Box
@@ -45,9 +54,9 @@ const Offices: React.FC = () => {
           backgroundColor: "#fff",
           padding: "16px 24px",
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-          position: "fixed", 
+          position: "fixed",
           top: 0,
-          height: "50px", 
+          height: "50px",
           width: "100vw",
           display: "flex",
           alignItems: "center",
@@ -68,11 +77,15 @@ const Offices: React.FC = () => {
 
       <Box
         sx={{
-          marginTop: "80px", 
+          marginTop: "80px",
           padding: 3,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 'calc(100vh - 130px)', // Full height minus top bar and margin
         }}
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {offices.map((office) => (
             <Grid item xs={12} sm={6} md={4} key={office.id}>
               <Card
@@ -80,7 +93,7 @@ const Offices: React.FC = () => {
                   textAlign: "center",
                   padding: 2,
                   borderRadius: "20px",
-                  height: "160px",
+                  height: "200px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -130,13 +143,14 @@ const Offices: React.FC = () => {
                 textAlign: "center",
                 padding: 2,
                 borderRadius: "20px",
-                height: "160px",
+                height: "200px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
                 backgroundColor: "#f0f0f0",
                 cursor: "pointer",
               }}
+              onClick={handleOpenDrawer} // Open the drawer when clicked
             >
               <CardContent>
                 <Typography variant="h6" color="primary">
@@ -147,6 +161,12 @@ const Offices: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
+
+      {/* AddOfficeDrawer component */}
+      <AddOfficeDrawer
+        open={drawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </>
   );
 };

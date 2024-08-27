@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Typography,} from '@mui/material';
 
-import Sidebar from '../Shared/SidebarAdmin/Sidebar';
 import ManageDU from './ManageDU'; // Component we'll create in the next step
 import HeaderBarAdmin from '../Shared/HeaderBarAdmin/HeaderBarAdmin';
 
@@ -12,8 +11,7 @@ const SettingsPage: React.FC = () => {
   const handleClose = () => setOpen(false);
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh',  width: "100vw", overFlowX: "hidden", backgroundColor:'#F6F7FF' }}>
-      <Sidebar />
+    <Box sx={{ display: 'flex', height: '100vh',  width: "82vw", overFlowX: "hidden", backgroundColor:'#F6F7FF' }}>
       <Box sx={{ flexGrow: 1 }}>
         <HeaderBarAdmin title="Settings" username="Rachel Rajan" />
         <Box sx={{backgroundColor:'white', p: 3,mt:10 }}>
