@@ -10,6 +10,7 @@ import SettingsPage from "./Pages/SettingsPage";
 import OfficesPage from "./Pages/OfficesPage";
 import AssignRolePage from "./Pages/AssignRolePage";
 // import BookDeskPage from "./Pages/BookDeskPage";
+import ManageLayoutPage from "./Pages/ManageLayoutPage";
 
 
 const AppContent = () => {
@@ -34,6 +35,7 @@ const AppContent = () => {
           {/* <Route path="/book-desk" element={<BookDeskPage />} /> */}
           <Route path="/offices" element={<OfficesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/manage-layout" element={<ManageLayoutPage />} />
 
           {/* Route to User View All Bookings Page */}
           <Route path="/user/bookings" element={<UserViewAllBookingsPage />} />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Toolbar, TextField, Button, Divider, Typography, Paper } from '@mui/material';
+import { Box, Toolbar, TextField, Button, Divider, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Slide } from '@mui/material';
 import { styled } from '@mui/system';
-import { Seat, ConferenceRoom, Cabin, Partition } from '../OfficeElements'; // Assuming these are in a separate file
+import { Seat, ConferenceRoom, Cabin, Partition, EntryPoint } from './OfficeElements'; // Assuming these are in a separate file
 
 const ManageLayoutContainer = styled(Box)({
   display: 'flex',
@@ -29,19 +29,17 @@ const ContentArea = styled(Box)({
 });
 
 const LayoutContainer = styled(Paper)({
-//   maxWidth: '100',  // Reduced size
   width: '100%',
-  height : '100%',
-  padding: '16px', // Reduced padding
+  height: '100%',
+  padding: '16px',
   backgroundColor: '#2D3748',
   color: '#FAFAFA',
   boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
   borderRadius: '8px',
   display: 'flex',
-  
   flexDirection: 'column',
   gap: '8px',
-  overflow: 'auto', // Ensure content stays within container
+  overflow: 'auto',
 });
 
 const StyledTextField = styled(TextField)({
@@ -72,11 +70,20 @@ const StyledButton = styled(Button)({
   },
 });
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="right" ref={ref} {...props} />;
+});
+
 const ManageLayout: React.FC = () => {
   const [seatsPerCubicle, setSeatsPerCubicle] = useState<number | string>(4);
   const [cubiclesPerRow, setCubiclesPerRow] = useState<number | string>(2);
   const [totalRows, setTotalRows] = useState<number | string>(2);
   const [elements, setElements] = useState<JSX.Element[]>([]);
+  const [markEntryPoint, setMarkEntryPoint] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [seatNumbers, setSeatNumbers] = useState<string>('');
+  const [moduleName, setModuleName] = useState<string>('');
+  const [accessDUs, setAccessDUs] = useState<string>('');
 
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number | string>>) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -84,8 +91,32 @@ const ManageLayout: React.FC = () => {
     setter(event.target.value);
   };
 
+  const handleMarkEntryPoint = () => {
+    setMarkEntryPoint(!markEntryPoint);
+  };
+
   const addElement = (element: JSX.Element) => {
     setElements([...elements, element]);
+  };
+  
+
+  const handleSaveLayout = () => {
+    // Implement your save logic here
+    alert('Layout saved!');
+  };
+
+  const handleConfirmLayout = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleSaveModal = () => {
+    // Save the layout with the provided details
+    alert('Layout details saved!');
+    setOpenModal(false);
   };
 
   const renderCubicle = () => {
@@ -94,7 +125,7 @@ const ManageLayout: React.FC = () => {
 
     const seatComponents = [];
     for (let i = 0; i < Number(seatsPerCubicle); i++) {
-      seatComponents.push(<Seat key={i} sx={{ width: '20px', height: '20px' }} />); // Reduced size
+      seatComponents.push(<Seat key={i} sx={{ width: '20px', height: '20px' }} />);
     }
 
     return (
@@ -103,12 +134,10 @@ const ManageLayout: React.FC = () => {
         flexDirection="column"
         alignItems="center"
         key={Math.random()}
-        style={{ position: 'relative', padding: '4px', border: '0px solid #4A5568', borderRadius: '8px' }} // Reduced padding
+        style={{ position: 'relative', padding: '4px', border: '0px solid #4A5568', borderRadius: '8px' }}
       >
         <Partition sx={{ position: 'absolute', top: 0, width: '100%', height: '5px' }} />
         <Partition sx={{ position: 'absolute', bottom: 0, width: '100%', height: '5px' }} />
-        {/* <Partition sx={{ position: 'absolute', left: 0, height: '100%', width: '5px' }} /> */}
-        {/* <Partition sx={{ position: 'absolute', right: 0, height: '100%', width: '5px' }} /> */}
         <Box
           display="grid"
           gridTemplateColumns={`repeat(${columns}, 1fr)`}
@@ -149,11 +178,7 @@ const ManageLayout: React.FC = () => {
         <Typography variant="h6" gutterBottom>
           Manage Layout
         </Typography>
-        <StyledTextField
-          label="Office Name"
-          variant="outlined"
-          size="small"
-        />
+        
         <StyledTextField
           label="Module Name"
           variant="outlined"
@@ -181,12 +206,18 @@ const ManageLayout: React.FC = () => {
           value={totalRows}
           onChange={handleInputChange(setTotalRows)}
         />
-        <StyledButton variant="contained">Mark Entry Point</StyledButton>
+        <StyledButton variant="contained" onClick={handleMarkEntryPoint}>
+          {markEntryPoint ? 'Cancel Entry Point' : 'Mark Entry Point'}
+        </StyledButton>
         <Divider style={{ backgroundColor: '#4A5568', margin: '16px 0' }} />
         <StyledButton variant="contained" onClick={() => addElement(<Seat sx={{ width: '20px', height: '20px' }} />)}>Add Seat</StyledButton>
         <StyledButton variant="contained" onClick={() => addElement(<ConferenceRoom sx={{ width: '100px', height: '100px' }} />)}>Add Conference Room</StyledButton>
         <StyledButton variant="contained" onClick={() => addElement(<Cabin sx={{ width: '50px', height: '50px' }} />)}>Add Cabins</StyledButton>
         <StyledButton variant="contained" onClick={() => addElement(<Partition sx={{ width: '10px', height: '10px' }} />)}>Add Partitions</StyledButton>
+        <Divider style={{ backgroundColor: '#4A5568', margin: '16px 0' }} />
+        <StyledButton variant="contained" onClick={handleConfirmLayout}>
+          Confirm Layout
+        </StyledButton>
       </Sidebar>
       <ContentArea>
         <LayoutContainer>
@@ -196,9 +227,71 @@ const ManageLayout: React.FC = () => {
           <Box sx={{ height: '100%', width: '90vw', backgroundColor: 'white', borderRadius: '8px', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
             {renderLayout()}
             {elements}
+            {markEntryPoint && <EntryPoint />}
           </Box>
         </LayoutContainer>
       </ContentArea>
+      
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        TransitionComponent={Transition}
+        keepMounted
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          style: {
+            backgroundColor: '#2D3748',
+            color: '#FAFAFA',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
+          },
+        }}
+      >
+        <DialogTitle>Confirm Layout</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" gutterBottom>
+            Number of Seats: {Number(seatsPerCubicle) * Number(totalRows) * Number(cubiclesPerRow)}
+          </Typography>
+          <StyledTextField
+            label="Unique Seat Numbers (comma separated)"
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={seatNumbers}
+            onChange={(e) => setSeatNumbers(e.target.value)}
+          />
+          <StyledTextField
+            label="Module Name"
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={moduleName}
+            onChange={(e) => setModuleName(e.target.value)}
+            style={{ marginTop: '16px' }}
+          />
+          <StyledTextField
+            label="DUs with Access (comma separated)"
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={accessDUs}
+            onChange={(e) => setAccessDUs(e.target.value)}
+            style={{ marginTop: '16px' }}
+          />
+          <Typography variant="caption" color="textSecondary" style={{ marginTop: '16px' }}>
+            Note: You can change the DUs with access later in the settings.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleSaveModal} variant="contained" color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ManageLayoutContainer>
   );
 };
