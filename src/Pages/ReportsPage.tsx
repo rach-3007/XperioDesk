@@ -1,13 +1,9 @@
 import React from "react";
-
-import Reports from "../Components/Reports/Reports";
-// import Sidebar from "../Components/Shared/SidebarAdmin/Sidebar";
-// const username = "User";
+// import Reports from "../Components/Reports/Reports";
 const ReportsPage: React.FC = () => {
   return (
     <div>
-      
-      <Reports/>
+      {/* <Reports /> */}
     </div>
   );
 };
