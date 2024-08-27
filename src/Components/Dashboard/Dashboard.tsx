@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import Sidebar from '../Shared/SidebarAdmin/Sidebar';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar } from '@mui/material';
 import DashboardOverview from './DashboardOverview';
 
 const Dashboard: React.FC = () => {
@@ -12,9 +11,15 @@ const Dashboard: React.FC = () => {
     { name: 'Rachel Rajan', id: '197431', seat: 'TVM-19-TH-019', office: 'Techno Park', date: '05-08-2024', status: 'Open' },
   ];
 
+  const getInitials = (name: string): string => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  };
+
   return (
     <Box sx={{ display: 'flex', backgroundColor: '#F4F6F8', minHeight: '100vh' }}>
-      <Sidebar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ color: '#1A202C', fontWeight: 600, letterSpacing: '0.5px' }}>
           Dashboard
@@ -28,7 +33,7 @@ const Dashboard: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600, color: '#2D3748' }}>Employee Name</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#2D3748' }}>Employee</TableCell>
                   <TableCell sx={{ fontWeight: 600, color: '#2D3748' }}>EXP ID</TableCell>
                   <TableCell sx={{ fontWeight: 600, color: '#2D3748' }}>Seat Number</TableCell>
                   <TableCell sx={{ fontWeight: 600, color: '#2D3748' }}>Office</TableCell>
@@ -42,7 +47,12 @@ const Dashboard: React.FC = () => {
                     key={index} 
                     sx={{ '&:hover': { backgroundColor: '#EDF2F7' } }}
                   >
-                    <TableCell sx={{ color: '#4A5568' }}>{booking.name}</TableCell>
+                    <TableCell sx={{ color: '#4A5568', display: 'flex', alignItems: 'center' }}>
+                      <Avatar sx={{ bgcolor: '#3182CE', marginRight: 2 }}>
+                        {getInitials(booking.name)}
+                      </Avatar>
+                      {booking.name}
+                    </TableCell>
                     <TableCell sx={{ color: '#4A5568' }}>{booking.id}</TableCell>
                     <TableCell sx={{ color: '#4A5568' }}>{booking.seat}</TableCell>
                     <TableCell sx={{ color: '#4A5568' }}>{booking.office}</TableCell>
