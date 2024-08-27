@@ -1,48 +1,60 @@
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Stage, Layer, Group, Rect } from 'react-konva';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DraggableSeat from './DraggableSeat'; // Ensure DraggableSeat is implemented using Konva
-import Partition from './Partition'; // Ensure Partition is correctly implemented
-
-const LayoutManager = () => {
-    const [elements, setElements] = useState([]);
-    const [cubiclesPerRow, setCubiclesPerRow] = useState(2);
-    const [rowsOfCubicles, setRowsOfCubicles] = useState(2);
-    const [seatsPerCubicle, setSeatsPerCubicle] = useState(4);
-    const [cubicleSpacingX, setCubicleSpacingX] = useState(50);
-    const [cubicleSpacingY, setCubicleSpacingY] = useState(50);
-    const [seatSpacingX, setSeatSpacingX] = useState(60);
-    const [seatSpacingY, setSeatSpacingY] = useState(60);
-    const [selectedElementId, setSelectedElementId] = useState(null);
-    const [selectedBuilding, setSelectedBuilding] = useState('');
-    const [selectedModule, setSelectedModule] = useState('');
-
+ 
+interface Position {
+    x: number;
+    y: number;
+}
+ 
+interface Element {
+    type: string;
+    id: string;
+    position: Position;
+    width?: number;
+    height?: number;
+    seats?: Element[];
+    rotation?: number;
+    iconColor?: string;
+}
+ 
+const LayoutManager: React.FC = () => {
+    const [elements, setElements] = useState<Element[]>([]);
+    const [cubiclesPerRow, setCubiclesPerRow] = useState<number>(2);
+    const [rowsOfCubicles, setRowsOfCubicles] = useState<number>(2);
+    const [seatsPerCubicle, setSeatsPerCubicle] = useState<number>(4);
+    const [cubicleSpacingX, setCubicleSpacingX] = useState<number>(50);
+    const [cubicleSpacingY, setCubicleSpacingY] = useState<number>(50);
+    const [seatSpacingX, setSeatSpacingX] = useState<number>(60);
+    const [seatSpacingY, setSeatSpacingY] = useState<number>(60);
+    const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+    const [selectedBuilding, setSelectedBuilding] = useState<string>('');
+    const [selectedModule, setSelectedModule] = useState<string>('');
+ 
     useEffect(() => {
         axios
             .get('/api/layouts/1')
             .then((response) => {
                 const config = response.data.configuration;
-                const initialElements = config?.elements ?? [];
+                const initialElements: Element[] = config?.elements ?? [];
                 setElements(initialElements);
             })
             .catch((error) => {
                 console.error('Error fetching layout:', error);
             });
     }, []);
-
+ 
     useEffect(() => {
-        const newElements = [];
+        const newElements: Element[] = [];
         for (let i = 0; i < rowsOfCubicles; i++) {
             for (let j = 0; j < cubiclesPerRow; j++) {
                 const cubicleX = j * (cubicleSpacingX + 200);
                 const cubicleY = i * (cubicleSpacingY + 200);
                 const cubicleWidth = 200;
                 const cubicleHeight = 200;
-
+ 
                 newElements.push({
                     type: 'partition',
                     id: `partition-top-${i}-${j}`,
@@ -71,14 +83,14 @@ const LayoutManager = () => {
                     width: 1,
                     height: cubicleHeight,
                 });
-
-                const seats = [];
+ 
+                const seats: Element[] = [];
                 for (let k = 0; k < seatsPerCubicle; k++) {
                     const row = Math.floor(k / 2);
                     const col = k % 2;
                     const seatX = cubicleX + col * seatSpacingX;
                     const seatY = cubicleY + row * seatSpacingY;
-
+ 
                     seats.push({
                         type: 'seat',
                         id: `seat-${i}-${j}-${k}`,
@@ -86,7 +98,7 @@ const LayoutManager = () => {
                         rotation: 0,
                     });
                 }
-
+ 
                 newElements.push({
                     type: 'cubicle',
                     id: `cubicle-${i}-${j}`,
@@ -99,9 +111,9 @@ const LayoutManager = () => {
         }
         setElements(newElements);
     }, [cubiclesPerRow, rowsOfCubicles, seatsPerCubicle, cubicleSpacingX, cubicleSpacingY, seatSpacingX, seatSpacingY]);
-
-    const handleDragEnd = (e, id) => {
-        const newPosition = {
+ 
+    const handleDragEnd = (e: any, id: string) => {
+        const newPosition: Position = {
             x: e.target.x(),
             y: e.target.y(),
         };
@@ -113,13 +125,13 @@ const LayoutManager = () => {
             )
         );
     };
-
-    const handleDragStart = (id) => {
+ 
+    const handleDragStart = (id: string) => {
         setSelectedElementId(id);
     };
-
-    const addElement = (type) => {
-        const newElement = {
+ 
+    const addElement = (type: string) => {
+        const newElement: Element = {
             type: type,
             id: `${type}-${elements.length + 1}`,
             position: { x: 100, y: 100 },
@@ -131,9 +143,11 @@ const LayoutManager = () => {
         };
         setElements([...elements, newElement]);
     };
-
-    const addSeat = (id) => {
-        const newSeat = {
+ 
+    const addSeat = (id: string | null) => {
+        if (!id) return;
+ 
+        const newSeat: Element = {
             type: 'seat',
             id: `seat-${elements.length + 1}`,
             position: { x: 100, y: 100 },
@@ -147,17 +161,19 @@ const LayoutManager = () => {
             )
         );
     };
-
-    const handleRotation = (id) => {
+ 
+    const handleRotation = (id: string | null) => {
+        if (!id) return;
+ 
         setElements((prevElements) =>
             prevElements.map((el) =>
                 el.id === id
-                    ? { ...el, rotation: (el.rotation + 90) % 360 }
+                    ? { ...el, rotation: (el.rotation! + 90) % 360 }
                     : el
             )
         );
     };
-
+ 
     const saveLayout = () => {
         axios
             .put('/api/layouts/1', {
@@ -171,14 +187,14 @@ const LayoutManager = () => {
                 console.error('Error saving layout:', error);
             });
     };
-
+ 
     const handleDelete = () => {
         setElements((prevElements) =>
             prevElements.filter((el) => el.id !== selectedElementId)
         );
         setSelectedElementId(null);
     };
-
+ 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
             <Box sx={{ width: 250, padding: 2, bgcolor: 'background.paper', display: 'flex', flexDirection: 'column' }}>
@@ -202,121 +218,82 @@ const LayoutManager = () => {
                     >
                         <MenuItem value="Module A">Module A</MenuItem>
                         <MenuItem value="Module B">Module B</MenuItem>
+                        <MenuItem value="Module C">Module C</MenuItem>
                     </Select>
                 </FormControl>
-                <TextField
-                    type="number"
-                    label="Cubicles Per Row"
-                    value={cubiclesPerRow}
-                    onChange={(e) => setCubiclesPerRow(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                    type="number"
-                    label="Rows of Cubicles"
-                    value={rowsOfCubicles}
-                    onChange={(e) => setRowsOfCubicles(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                    type="number"
-                    label="Seats Per Cubicle"
-                    value={seatsPerCubicle}
-                    onChange={(e) => setSeatsPerCubicle(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                    type="number"
-                    label="Cubicle Spacing X"
-                    value={cubicleSpacingX}
-                    onChange={(e) => setCubicleSpacingX(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                    type="number"
-                    label="Cubicle Spacing Y"
-                    value={cubicleSpacingY}
-                    onChange={(e) => setCubicleSpacingY(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                    type="number"
-                    label="Seat Spacing X"
-                    value={seatSpacingX}
-                    onChange={(e) => setSeatSpacingX(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <TextField
-                    type="number"
-                    label="Seat Spacing Y"
-                    value={seatSpacingY}
-                    onChange={(e) => setSeatSpacingY(Number(e.target.value))}
-                    sx={{ marginBottom: 2 }}
-                />
-                <Button variant="contained" onClick={() => addElement('conferenceRoom')} sx={{ marginBottom: 2 }}>Add Conference Room</Button>
-                <Button variant="contained" onClick={() => addElement('cubicle')} sx={{ marginBottom: 2 }}>Add Cubicle</Button>
-                <Button variant="contained" onClick={() => addSeat(selectedElementId)} sx={{ marginBottom: 2 }} disabled={!selectedElementId}>Add Seat</Button>
-                <Button variant="contained" onClick={() => handleRotation(selectedElementId)} sx={{ marginBottom: 2 }} disabled={!selectedElementId}>Rotate Selected</Button>
-                <Button variant="contained" onClick={saveLayout}>Save Layout</Button>
-                <Button variant="contained" color="error" onClick={handleDelete} sx={{ marginTop: 2 }} disabled={!selectedElementId}>Delete Selected</Button>
+                <Button variant="contained" sx={{ marginBottom: 2 }} onClick={() => addElement('cubicle')}>
+                    Add Cubicle
+                </Button>
+                <Button variant="contained" sx={{ marginBottom: 2 }} onClick={() => addElement('conferenceRoom')}>
+                    Add Conference Room
+                </Button>
+                <Button variant="contained" sx={{ marginBottom: 2 }} onClick={() => addSeat(selectedElementId)}>
+                    Add Seat
+                </Button>
+                <Button variant="contained" sx={{ marginBottom: 2 }} onClick={() => handleRotation(selectedElementId)}>
+                    Rotate
+                </Button>
+                <Button variant="contained" sx={{ marginBottom: 2 }} onClick={saveLayout}>
+                    Save Layout
+                </Button>
+                <Button variant="contained" sx={{ marginBottom: 2 }} color="error" onClick={handleDelete}>
+                    Delete Selected Element
+                </Button>
             </Box>
-            <Container>
-                <Stage width={window.innerWidth - 250} height={window.innerHeight}>
+            <Container sx={{ flex: 1 }}>
+                <Stage width={window.innerWidth} height={window.innerHeight}>
                     <Layer>
-                        {elements.map((el) => (
-                            <Group
-                                key={el.id}
-                                draggable
-                                onDragEnd={(e) => handleDragEnd(e, el.id)}
-                                onDragStart={() => handleDragStart(el.id)}
-                                rotation={el.rotation || 0}
-                            >
-                                {el.type === 'cubicle' && (
-                                    <React.Fragment>
+                        {elements.map((el) => {
+                            if (el.type === 'cubicle') {
+                                return (
+                                    <Group key={el.id}>
                                         <Rect
                                             x={el.position.x}
                                             y={el.position.y}
                                             width={el.width}
                                             height={el.height}
-                                            fill="#d5d5d5"
-                                            stroke="#000"
-                                            strokeWidth={2}
+                                            stroke="blue"
                                         />
-                                        {el.seats.map((seat) => (
+                                        {el.seats && el.seats.map((seat) => (
                                             <DraggableSeat
                                                 key={seat.id}
-                                                x={seat.position.x}
-                                                y={seat.position.y}
-                                                rotation={seat.rotation}
-                                                onDragEnd={(e) => handleDragEnd(e, seat.id)}
+                                                seat={seat}
+                                                onDragEnd={handleDragEnd}
+                                                onDragStart={handleDragStart}
                                             />
                                         ))}
-                                    </React.Fragment>
-                                )}
-                                {el.type === 'partition' && (
-                                    <Partition
+                                    </Group>
+                                );
+                            } else if (el.type === 'partition') {
+                                return (
+                                    <Rect
+                                        key={el.id}
                                         x={el.position.x}
                                         y={el.position.y}
                                         width={el.width}
                                         height={el.height}
+                                        stroke="black"
                                     />
-                                )}
-                                {el.type === 'conferenceRoom' && (
-                                    <LocationOnIcon
-                                        sx={{ color: el.iconColor, fontSize: 60 }}
+                                );
+                            } else if (el.type === 'conferenceRoom') {
+                                return (
+                                    <Rect
+                                        key={el.id}
                                         x={el.position.x}
                                         y={el.position.y}
-                                        draggable
-                                        onDragEnd={(e) => handleDragEnd(e, el.id)}
+                                        width={el.width}
+                                        height={el.height}
+                                        stroke="orange"
                                     />
-                                )}
-                            </Group>
-                        ))}
+                                );
+                            }
+                            return null;
+                        })}
                     </Layer>
                 </Stage>
             </Container>
         </Box>
     );
 };
-
+ 
 export default LayoutManager;

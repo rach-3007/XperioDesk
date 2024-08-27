@@ -70,10 +70,10 @@ const Analytics: React.FC = () => {
     scales: {
       x: {
         grid: {
-          display: false, // Removes the grid lines on the x-axis
+          display: false, 
         },
         border: {
-          display: false, // Removes the axis line on the x-axis
+          display: false, 
         },
       },
       y: {
@@ -146,18 +146,18 @@ const Analytics: React.FC = () => {
     scales: {
       x: {
         grid: {
-          display: false, // Removes the grid lines on the x-axis
+          display: false, 
         },
         border: {
-          display: false, // Removes the axis line on the x-axis
+          display: false, 
         },
       },
       y: {
         grid: {
-          display: false, // Removes the grid lines on the y-axis
+          display: false, 
         },
         border: {
-          display: false, // Removes the axis line on the y-axis
+          display: false,
         },
       },
     },
@@ -268,13 +268,13 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
   }, []);
 
   return (
-    <Box>
-      <Box sx={{ ml: 29, mb: 6 }}>
+    <Box sx={{}}>
+      <Box >
         <Navbar />
       </Box>
 
-      <Box sx={{ ml: 33,mt:-4,mb:5 }}> 
-        <FormControl sx={{ minWidth: 100 }}>
+      <Box sx={{ }}> 
+        <FormControl sx={{ minWidth: 100,mb:5,mt:2,ml:3}}>
           <Select
             value={selectedOption}
             onChange={(event) => setSelectedOption(event.target.value)}
@@ -282,7 +282,10 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             inputProps={{ 'aria-label': 'Without label' }}
           >
             <MenuItem value="">
-              <em>Select an option</em>
+              <em>Gayatri Building</em>
+            </MenuItem>
+            <MenuItem value="">
+              <em>Tejaswini Building</em>
             </MenuItem>
             {dropdownOptions.map((option) => (
               <MenuItem key={option} value={option}>{option}</MenuItem>
@@ -290,7 +293,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
           </Select>
         </FormControl>
       </Box>
-      <Box sx={{ ml: 33 }}>
+      <Box >
         <Grid container spacing={2}>
           {/* Row 1 */}
 
@@ -298,7 +301,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             container
             sx={{ display: "flex", justifyContent: "space-around" }}
           >
-            <Grid item xs={12} md={7}>
+            <Grid item xs={12} md={6}>
               <Card sx={{ height: "100%" }}>
                 <CardContent sx={{ height: "100%", padding: 2 }}>
                   <Box
@@ -359,10 +362,10 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
                   </Typography>
                   <Box sx={{ width: "100%", height: "100%" }}>
                     <PieChart
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                      }}
+                      // options={{
+                      //   responsive: true,
+                      //   maintainAspectRatio: false,
+                      // }}
                     />
                   </Box>
                 </CardContent>

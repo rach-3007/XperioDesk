@@ -229,7 +229,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                         marginTop: "20px",
                         backgroundColor: "#04122E",
                         "&:hover": {
-                          backgroundColor: "#0F0d21", // Slightly darker color on hover
+                          backgroundColor: "#0F0d21", 
                         },
                       }}
                     >

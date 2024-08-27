@@ -1,5 +1,5 @@
 import Analytics from "../Components/Analytics/Analytics"
-import Sidebar from "../Components/Shared/SidebarAdmin/Sidebar"
+
 
 
 
@@ -9,7 +9,7 @@ const AnalyticsPage = () => {
     <>
     
     <div>
-      <Sidebar/>
+      
       <Analytics/>
     </div>
     </>

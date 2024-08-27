@@ -18,16 +18,15 @@ import {
 import { ArrowDropDown, Download, Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { bookings } from "../../data";
-import Sidebar from "../Shared/SidebarAdmin/Sidebar";
 
 interface Booking {
   id: number;
   employeeName: string;
-  expId: string;
+  expId: number|string;
   seatNumber: string;
   office: string;
   dateOfBooking: string;
-  loginStatus: boolean;
+  loginStatus: string;
   status: string;
 }
 
@@ -46,7 +45,7 @@ const Reports: React.FC = () => {
     status: "",
   });
   const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const [orderBy, setOrderBy] = useState<keyof Booking>("");
+  const [orderBy, setOrderBy] = useState<keyof Booking>("expId");
 
   const navigate = useNavigate();
 
@@ -54,6 +53,7 @@ const Reports: React.FC = () => {
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
+    event?.preventDefault();
     setPage(newPage);
   };
 
@@ -85,6 +85,7 @@ const Reports: React.FC = () => {
     event: React.MouseEvent<unknown>,
     property: keyof Booking
   ) => {
+    event?.preventDefault();
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
@@ -119,11 +120,11 @@ const Reports: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
-      <Sidebar />
+      
       <Box
         sx={{
           flexGrow: 1,
-          ml: "30px",
+          ml:3,
           mt: 2,
           display: "flex",
           flexDirection: "column",
@@ -138,7 +139,7 @@ const Reports: React.FC = () => {
             padding: "10px",
             borderRadius: "8px",
             backgroundColor: "#fff",
-            maxWidth: "970px",
+            maxWidth: "1020px",
           }}
         >
           <TextField
@@ -206,7 +207,7 @@ const Reports: React.FC = () => {
                       <TableSortLabel
                         active={orderBy === column}
                         direction={orderBy === column ? order : "asc"}
-                        onClick={(event) => handleRequestSort(event, column)}
+                        onClick={(event) => handleRequestSort(event, column as keyof Booking)}
                         sx={{ lineHeight: 1, maxWidth: 95 }}
                         data-column={column}
                       >
@@ -215,7 +216,7 @@ const Reports: React.FC = () => {
                           .replace(/^./, (str) => str.toUpperCase())}
                         <IconButton
                           size="small"
-                          onClick={(event) => handleFilterClick(event, column)}
+                          onClick={handleFilterClick}
                         >
                           <ArrowDropDown />
                         </IconButton>
@@ -292,7 +293,7 @@ const Reports: React.FC = () => {
               label={`Filter by ${currentColumn}`}
               variant="outlined"
               fullWidth
-              value={filters[currentColumn]}
+              value={filters[currentColumn as keyof Booking]}
               onChange={handleFilterChange}
             />
           </Box>
