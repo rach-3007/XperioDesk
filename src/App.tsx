@@ -3,7 +3,7 @@ import Sidebar from "./Components/Shared/SidebarAdmin/Sidebar";
 import LoginPage from "./Pages/LoginPage";
 import UserViewAllBookingsPage from "./Pages/UserViewAllBookingsPage";
 import DashboardPage from "./Pages/DashboardPage";
-// import AnalyticsPage from "./Pages/AnalyticsPage";
+import AnalyticsPage from "./Pages/AnalyticsPage";
 import ReportsPage from "./Pages/ReportsPage";
 import SettingsPage from "./Pages/SettingsPage";
 // import NotificationsPage from "./Pages/NotificationsPage";
@@ -11,6 +11,7 @@ import OfficesPage from "./Pages/OfficesPage";
 import AssignRolePage from "./Pages/AssignRolePage";
 // import BookDeskPage from "./Pages/BookDeskPage";
 import ManageLayoutPage from "./Pages/ManageLayoutPage";
+
 
 const AppContent = () => {
   const location = useLocation();
@@ -27,7 +28,7 @@ const AppContent = () => {
 
           {/* Route to the Dashboard Page */}
           <Route path="/home" element={<DashboardPage />} />
-          {/* <Route path="/analytics" element={<AnalyticsPage />} /> */}
+          <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
           <Route path="/assign-role" element={<AssignRolePage />} />
