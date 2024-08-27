@@ -1,5 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Sidebar from "./Components/Shared/SidebarAdmin/Sidebar"; 
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import Sidebar from "./Components/Shared/SidebarAdmin/Sidebar";
 import LoginPage from "./Pages/LoginPage";
 import UserViewAllBookingsPage from "./Pages/UserViewAllBookingsPage";
 import DashboardPage from "./Pages/DashboardPage";
@@ -10,8 +15,7 @@ import SettingsPage from "./Pages/SettingsPage";
 import OfficesPage from "./Pages/OfficesPage";
 import AssignRolePage from "./Pages/AssignRolePage";
 // import BookDeskPage from "./Pages/BookDeskPage";
-import ManageLayoutPage from "./Pages/ManageLayoutPage";
-
+import ManageLayoutPage from "./Pages/ManageLayout/ManageLayoutPage";
 
 const AppContent = () => {
   const location = useLocation();
@@ -19,7 +23,7 @@ const AppContent = () => {
   const isLoginPage = location.pathname === "/";
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: "flex" }}>
       {!isLoginPage && <Sidebar />}
       <div style={{ flexGrow: 1 }}>
         <Routes>

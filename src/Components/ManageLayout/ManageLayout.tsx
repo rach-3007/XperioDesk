@@ -12,7 +12,7 @@ const ManageLayoutContainer = styled(Box)({
 
 const Sidebar = styled(Toolbar)({
   width: '200px',
-  display: 'flex',
+  display: 'flex', 
   flexDirection: 'column',
   padding: '16px',
   backgroundColor: '#2D3748',
