@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Card, CardContent, Typography, FormControl, MenuItem, Select } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  FormControl,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import BarChart from "./BarChart";
 import DoughNut from "./DoughNut";
 import PieChart from "./PieChart";
@@ -7,8 +16,6 @@ import SeatOccupancy from "./SeatOccupancy"; // Import SeatOccupancy component
 import { ChartOptions as ChartJSOptions, ScriptableContext } from "chart.js";
 
 import Navbar from "./Navbar";
-
-
 
 const Analytics: React.FC = () => {
   const barChartData1 = {
@@ -70,10 +77,10 @@ const Analytics: React.FC = () => {
     scales: {
       x: {
         grid: {
-          display: false, 
+          display: false,
         },
         border: {
-          display: false, 
+          display: false,
         },
       },
       y: {
@@ -146,15 +153,15 @@ const Analytics: React.FC = () => {
     scales: {
       x: {
         grid: {
-          display: false, 
+          display: false,
         },
         border: {
-          display: false, 
+          display: false,
         },
       },
       y: {
         grid: {
-          display: false, 
+          display: false,
         },
         border: {
           display: false,
@@ -247,20 +254,20 @@ const Analytics: React.FC = () => {
     },
     cutout: "70%",
   };
-// dropdown
-const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
-  const [selectedOption, setSelectedOption] = useState<string>('');
+  // dropdown
+  const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   useEffect(() => {
     // Replace with your actual API call
     const fetchDropdownOptions = async () => {
       try {
-        const response = await fetch('your_api_endpoint'); // Fetch data from your API
+        const response = await fetch("your_api_endpoint"); // Fetch data from your API
         const data = await response.json();
         setDropdownOptions(data.options); // Assuming your API response has an 'options' array
         setSelectedOption(data.options[0]); // Set the first option as the default selected option
       } catch (error) {
-        console.error('Error fetching dropdown options:', error);
+        console.error("Error fetching dropdown options:", error);
       }
     };
 
@@ -268,32 +275,37 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
   }, []);
 
   return (
-    <Box sx={{}}>
-      <Box >
+    <Box sx={{ backgroundColor: "#F4F6F8" }}>
+      <Box>
         <Navbar />
       </Box>
 
-      <Box sx={{ }}> 
-        <FormControl sx={{ minWidth: 100,mb:5,mt:2,ml:3}}>
+      <Box sx={{}}>
+        <FormControl sx={{ minWidth: 100, mb: 5, mt: 2, ml: 3 }}>
           <Select
             value={selectedOption}
             onChange={(event) => setSelectedOption(event.target.value)}
             displayEmpty
-            inputProps={{ 'aria-label': 'Without label' }}
+            inputProps={{ "aria-label": "Without label" }}
           >
             <MenuItem value="">
-              <em>Gayatri Building</em>
+              <em>Select an option</em>
             </MenuItem>
-            <MenuItem value="">
-              <em>Tejaswini Building</em>
-            </MenuItem>
+            <MenuItem value="Gayatri Building">Gayatri Building</MenuItem>{" "}
+            {/* Existing option */}
+            <MenuItem value="Tejaswini Building">
+              Tejaswini Building
+            </MenuItem>{" "}
+            {/* New option */}
             {dropdownOptions.map((option) => (
-              <MenuItem key={option} value={option}>{option}</MenuItem>
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
       </Box>
-      <Box >
+      <Box>
         <Grid container spacing={2}>
           {/* Row 1 */}
 
@@ -302,7 +314,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             sx={{ display: "flex", justifyContent: "space-around" }}
           >
             <Grid item xs={12} md={6}>
-              <Card sx={{ height: "100%" }}>
+              <Card sx={{ height: "100%", backgroundColor: "#F4F6F8" }}>
                 <CardContent sx={{ height: "100%", padding: 2 }}>
                   <Box
                     sx={{
@@ -326,11 +338,21 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             </Grid>
 
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "100%" , border:"none",boxShadow:"none"}}>
+              <Card
+                sx={{
+                  height: "100%",
+                  border: "none",
+                  boxShadow: "none",
+                  backgroundColor: "#F4F6F8",
+                }}
+              >
                 <CardContent sx={{ height: "100%", padding: 2 }}>
-                <Typography variant="h6" sx={{ paddingBottom: "16px",marginLeft:"35px" }}>
-                      Seat Occupancy
-                    </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{ paddingBottom: "16px", marginLeft: "35px" }}
+                  >
+                    Seat Occupancy
+                  </Typography>
                   <SeatOccupancy />
                 </CardContent>
               </Card>
@@ -346,7 +368,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
             sx={{ mt: 1, display: "flex", justifyContent: "space-around" }}
           >
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "80%",  }}>
+              <Card sx={{ height: "80%", backgroundColor: "#F4F6F8" }}>
                 <CardContent
                   sx={{
                     height: "100%",
@@ -354,26 +376,20 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
                     alignItems: "center",
                     justifyContent: "center",
                     flexDirection: "column",
-                   
                   }}
                 >
                   <Typography variant="h6" align="left" sx={{ mt: 1, mr: 35 }}>
                     Du Occupancy
                   </Typography>
                   <Box sx={{ width: "100%", height: "100%" }}>
-                    <PieChart
-                      // options={{
-                      //   responsive: true,
-                      //   maintainAspectRatio: false,
-                      // }}
-                    />
+                    <PieChart />
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
 
             <Grid item xs={12} md={5}>
-              <Card sx={{ height: "80%" }}>
+              <Card sx={{ height: "80%", backgroundColor: "#F4F6F8" }}>
                 <CardContent>
                   <Typography variant="h6">Today's Booking</Typography>
                   <DoughNut data={doughnutData1} options={doughnutOptions1} />
@@ -385,7 +401,7 @@ const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
           {/* Row 3 */}
           <Grid container item xs={12} spacing={2} sx={{ mt: -12 }}>
             <Grid item xs={12} md={4}>
-              <Card sx={{ height: "95%" }}>
+              <Card sx={{ height: "95%", backgroundColor: "#F4F6F8" }}>
                 <CardContent>
                   <Typography variant="h6">Today's Utilization rate</Typography>
                   <DoughNut data={doughnutData2} options={doughnutOptions2} />
