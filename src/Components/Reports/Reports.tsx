@@ -11,51 +11,62 @@ import {
   TablePagination,
   IconButton,
   Popover,
-  Button,
   TableSortLabel,
   Typography,
   Paper,
 } from "@mui/material";
-import { FilterList, Download, Add, ArrowDropDown } from "@mui/icons-material";
+import { ArrowDropDown, Download, Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { bookings } from "../../data";
-import styles from "./Reports.module.css";
 
-const AdminViewAllBookings: React.FC = () => {
+interface Booking {
+  id: number;
+  employeeName: string;
+  expId: number|string;
+  seatNumber: string;
+  office: string;
+  dateOfBooking: string;
+  loginStatus: string;
+  status: string;
+}
+
+const Reports: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [currentColumn, setCurrentColumn] = useState<string>("");
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Partial<Booking>>({
     employeeName: "",
     expId: "",
     seatNumber: "",
     office: "",
     dateOfBooking: "",
+    loginStatus: "",
     status: "",
   });
   const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const [orderBy, setOrderBy] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<keyof Booking>("expId");
 
   const navigate = useNavigate();
 
-  const handlePageChange = (event: unknown, newPage: number) => {
+  const handlePageChange = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    event?.preventDefault();
     setPage(newPage);
   };
 
   const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleFilterClick = (
-    event: React.MouseEvent<HTMLElement>,
-    column: string
-  ) => {
+  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    setCurrentColumn(column);
+    setCurrentColumn(event.currentTarget.getAttribute("data-column") || "");
   };
 
   const handleFilterClose = () => {
@@ -72,24 +83,26 @@ const AdminViewAllBookings: React.FC = () => {
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: string
+    property: keyof Booking
   ) => {
+    event?.preventDefault();
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
-  const handleRowClick = (booking: any) => {
+  const handleRowClick = (booking: Booking) => {
     navigate(`/view-or-edit-booking/${booking.id}`, { state: { booking } });
   };
 
   const filteredBookings = bookings.filter((booking) =>
-    Object.keys(filters).every((key) =>
-      booking[key]
-        .toString()
+    Object.keys(filters).every((key) => {
+      const filterValue = filters[key as keyof Booking];
+      return booking[key as keyof Booking]
+        ?.toString()
         .toLowerCase()
-        .includes(filters[key].toString().toLowerCase())
-    )
+        .includes(filterValue?.toString().toLowerCase() || "");
+    })
   );
 
   const sortedBookings = filteredBookings.sort((a, b) => {
@@ -106,122 +119,186 @@ const AdminViewAllBookings: React.FC = () => {
   const id = open ? "simple-popover" : undefined;
 
   return (
-    <Box className={styles.container}>
-      <Box className={styles.header}>
-        <TextField
-          label="Search"
-          variant="outlined"
-          className={styles.searchBar}
+    <Box sx={{ display: "flex", height: "100vh" }}>
+      
+      <Box
+        sx={{
+          flexGrow: 1,
+          ml:3,
+          mt: 2,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          mb={2}
           sx={{
-            width: "300px",
-            "& .MuiInputBase-root": {
-              borderRadius: "25px",
-              backgroundColor: "#fff",
-            },
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+            padding: "10px",
+            borderRadius: "8px",
+            backgroundColor: "#fff",
+            maxWidth: "1020px",
           }}
-        />
-        <Box className={styles.actions}>
-          <IconButton sx={{ color: "#0F172A" }}>
-            <Download />
-          </IconButton>
-          <IconButton sx={{ color: "#0F172A" }}>
-            <Add />
-          </IconButton>
+        >
+          <TextField
+            label="Search"
+            variant="outlined"
+            sx={{
+              width: "200px",
+              "& .MuiInputBase-root": {
+                borderRadius: "7px",
+                backgroundColor: "#fff",
+                height: "30px",
+                padding: "0 8px",
+                fontSize: "0.875rem",
+                lineHeight: "1.2",
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: "0.75rem",
+                lineHeight: "1.2",
+                transform: "translate(14px, 10px) scale(1)",
+              },
+              "& .MuiInputLabel-shrink": {
+                transform: "translate(14px, -6px) scale(0.75)",
+              },
+            }}
+          />
+
+          <Box>
+            <IconButton sx={{ color: "#0F172A" }}>
+              <Download />
+            </IconButton>
+            <IconButton sx={{ color: "#0F172A" }}>
+              <Add />
+            </IconButton>
+          </Box>
         </Box>
-      </Box>
-      <Box className={styles.tableContainer}>
+
         <Typography variant="h4" gutterBottom sx={{ color: "#0F172A" }}>
           All Bookings
         </Typography>
-        <TableContainer component={Paper} className={styles.tablePaper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell className={styles.headerCell}>Serial No</TableCell>
-                {[
-                  "employeeName",
-                  "expId",
-                  "seatNumber",
-                  "office",
-                  "dateOfBooking",
-                  "status",
-                ].map((column) => (
-                  <TableCell key={column} className={styles.headerCell}>
-                    <TableSortLabel
-                      active={orderBy === column}
-                      direction={orderBy === column ? order : "asc"}
-                      onClick={(event) => handleRequestSort(event, column)}
-                    >
-                      {column
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())}
-                      <IconButton
-                        size="small"
-                        onClick={(event) => handleFilterClick(event, column)}
-                      >
-                        <ArrowDropDown />
-                      </IconButton>
-                    </TableSortLabel>
+
+        <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
+          <TableContainer
+            component={Paper}
+            sx={{ height: "100%", overflow: "auto" }}
+          >
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                    Serial No
                   </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedBookings
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((booking, index) => (
-                  <TableRow
-                    key={index}
-                    onClick={() => handleRowClick(booking)}
-                    className={styles.tableRow}
-                  >
-                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                    <TableCell>
-                      {booking.employeeName}
-                      <br />
-                      <span className={styles.subContent}>DU-6</span>
+                  {[
+                    "employeeName",
+                    "expId",
+                    "seatNumber",
+                    "office",
+                    "dateOfBooking",
+                    "loginStatus",
+                    "status",
+                  ].map((column) => (
+                    <TableCell
+                      key={column}
+                      sx={{ padding: "6px 16px", lineHeight: 1.2 }}
+                    >
+                      <TableSortLabel
+                        active={orderBy === column}
+                        direction={orderBy === column ? order : "asc"}
+                        onClick={(event) => handleRequestSort(event, column as keyof Booking)}
+                        sx={{ lineHeight: 1, maxWidth: 95 }}
+                        data-column={column}
+                      >
+                        {column
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                        <IconButton
+                          size="small"
+                          onClick={handleFilterClick}
+                        >
+                          <ArrowDropDown />
+                        </IconButton>
+                      </TableSortLabel>
                     </TableCell>
-                    <TableCell>{booking.expId}</TableCell>
-                    <TableCell>{booking.seatNumber}</TableCell>
-                    <TableCell>{booking.office}</TableCell>
-                    <TableCell>{booking.dateOfBooking}</TableCell>
-                    <TableCell>{booking.status}</TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-      <TablePagination
-        rowsPerPageOptions={[5, 12, 18]}
-        component="div"
-        count={sortedBookings.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        className={styles.pagination}
-      />
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleFilterClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
-        <Box p={2}>
-          <TextField
-            label={`Filter by ${currentColumn}`}
-            variant="outlined"
-            fullWidth
-            value={filters[currentColumn]}
-            onChange={handleFilterChange}
-          />
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sortedBookings
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((booking, index) => (
+                    <TableRow
+                      key={index}
+                      onClick={() => handleRowClick(booking)}
+                    >
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {page * rowsPerPage + index + 1}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.employeeName}
+                        <br />
+                        <span style={{ color: "#777", fontSize: "0.875rem" }}>
+                          DU-6
+                        </span>
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.expId}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.seatNumber}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.office}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.dateOfBooking}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.loginStatus ? "Yes" : "No"}
+                      </TableCell>
+                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
+                        {booking.status}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
-      </Popover>
+
+        <TablePagination
+          rowsPerPageOptions={[10, 20]}
+          component="div"
+          count={sortedBookings.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+        />
+
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleFilterClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+        >
+          <Box p={2}>
+            <TextField
+              label={`Filter by ${currentColumn}`}
+              variant="outlined"
+              fullWidth
+              value={filters[currentColumn as keyof Booking]}
+              onChange={handleFilterChange}
+            />
+          </Box>
+        </Popover>
+      </Box>
     </Box>
   );
 };
