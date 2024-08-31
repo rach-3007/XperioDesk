@@ -12,7 +12,7 @@ import {
 import BarChart from "./BarChart";
 import DoughNut from "./DoughNut";
 import PieChart from "./PieChart";
-import SeatOccupancy from "./SeatOccupancy"; // Import SeatOccupancy component
+import SeatOccupancy from "./SeatOccupancy"; 
 import { ChartOptions as ChartJSOptions, ScriptableContext } from "chart.js";
 
 import Navbar from "./Navbar";
@@ -208,7 +208,7 @@ const Analytics: React.FC = () => {
     },
     layout: {
       padding: {
-        top: 0, // Adjust this value if you want to shift the entire chart content
+        top: 0, 
         right: 0,
         bottom: 85,
         left: 0,
@@ -257,15 +257,15 @@ const Analytics: React.FC = () => {
   // dropdown
   const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<string>("");
-
+// fetch buildings  api goes here 
   useEffect(() => {
-    // Replace with your actual API call
+    
     const fetchDropdownOptions = async () => {
       try {
-        const response = await fetch("your_api_endpoint"); // Fetch data from your API
+        const response = await fetch("your_api_endpoint"); 
         const data = await response.json();
-        setDropdownOptions(data.options); // Assuming your API response has an 'options' array
-        setSelectedOption(data.options[0]); // Set the first option as the default selected option
+        setDropdownOptions(data.options); 
+        setSelectedOption(data.options[0]); 
       } catch (error) {
         console.error("Error fetching dropdown options:", error);
       }

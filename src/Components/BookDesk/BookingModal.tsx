@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
-  // DialogTitle,
   DialogContent,
   Tabs,
   Tab,
@@ -12,6 +11,7 @@ import {
   Slide,
   Typography,
   styled,
+  Autocomplete,
 } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
@@ -38,13 +38,102 @@ const RightSideBox = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[5], // Optional: for a subtle shadow
 }));
 
+interface User {
+  id: number;
+  name: string;
+}
+
 const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedTime, setSelectedTime] = useState<Dayjs | null>(dayjs());
+  const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(dayjs()); 
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+  };
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/admin/users");
+        const data = await response.json();
+
+        if (
+          Array.isArray(data.data) &&
+          data.data.every((item) => {
+            return typeof item.id === "number" && typeof item.name === "string";
+          })
+        ) {
+          setUsers(data.data);
+        } else {
+          console.error("Invalid API response format:", data);
+          setUsers([]);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setUsers([]);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  //booking logic
+  const seatId = "1"; // Replace with actual seat selection logic
+
+  const handleBookingSubmit = async (event: React.FormEvent) => {
+    // Create the payload object
+  const payload = {
+    seat_id: seatId,
+    user_id: selectedUser.id,
+    start_date: selectedDate.format("YYYY-MM-DD"), 
+    end_date: selectedEndDate.format("YYYY-MM-DD"), 
+    booked_by: 1 // Replace with Auth::user()->id from your backend
+  };
+
+  // Log the payload to the console
+  console.log("Booking payload:", payload);
+    event.preventDefault();
+
+    if (!selectedUser || !seatId || !selectedDate || !selectedTime) {
+      // Handle missing data (e.g., show an error message)
+      console.error("Missing required booking data");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/admin/assign-seat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add any necessary authentication headers here (e.g., 'Authorization': 'Bearer ' + yourAuthToken)
+        },
+        body: JSON.stringify({
+          seat_id: seatId,
+          user_id: selectedUser.id,
+          start_date: selectedDate.format("YYYY-MM-DD"), 
+          end_date: selectedEndDate.format("YYYY-MM-DD"), 
+          booked_by: 1 // Replace with Auth::user()->id from your backend
+        }),
+      });
+
+      if (response.ok) {
+        const bookingData = await response.json();
+        console.log("Booking successful:", bookingData);
+        onClose(); 
+      } else {
+        const errorData = await response.json();
+        console.error("Booking failed:", errorData);
+        // Display a user-friendly error message based on errorData
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
+      // Display a generic error message
+    }
   };
 
   return (
@@ -67,7 +156,6 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
     >
       <RightSideBox>
         <Box sx={{ backgroundColor: "#F5F6FF" }}>
-          {/* <DialogTitle>Confirm Booking</DialogTitle> */}
           <DialogContent>
             <Box
               sx={{
@@ -113,129 +201,143 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                 </Box>
 
                 {activeTab === 0 && (
-                  <Box
-                    sx={{
-                      padding: "10px",
-                      backgroundColor: "#F5F6FF",
-                      borderRadius: "2px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "16px",
-                    }}
-                  >
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                      User:
-                    </Typography>
-                    <TextField select>
-                      <MenuItem value="user1">User 1</MenuItem>
-                      <MenuItem value="user2">User 2</MenuItem>
-                    </TextField>
-
+                  <form onSubmit={handleBookingSubmit}>
                     <Box
                       sx={{
+                        padding: "10px",
+                        backgroundColor: "#F5F6FF",
+                        borderRadius: "2px",
                         display: "flex",
                         flexDirection: "column",
-                        gap: "8px",
+                        gap: "16px",
                       }}
                     >
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        From:
-                      </Typography>
+                      <Autocomplete
+                        id="user-select"
+                        options={users}
+                        getOptionLabel={(user) => user.name}
+                        value={selectedUser}
+                        onChange={(event, newValue) => {
+                          setSelectedUser(newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Select User"
+                            variant="outlined"
+                          />
+                        )}
+                        fullWidth
+                        margin="normal"
+                      />
+
                       <Box
                         sx={{
                           display: "flex",
                           flexDirection: "column",
-                          gap: "10px",
+                          gap: "8px",
                         }}
                       >
-                        <DatePicker
-                          label="Select Date"
-                          value={selectedDate}
-                          onChange={(newValue) => setSelectedDate(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                              // helperText: "Select a date",
-                            },
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          From:
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px",
                           }}
-                        />
-                        <TimePicker
-                          label="Select Time"
-                          value={selectedTime}
-                          onChange={(newValue) => setSelectedTime(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
-                          }}
-                        />
+                        >
+                          <DatePicker
+                            label="Select Date"
+                            value={selectedDate}
+                            onChange={(newValue) => setSelectedDate(newValue)}
+                            slotProps={{
+                              textField: {
+                                variant: "outlined",
+                                error: false,
+                              },
+                            }}
+                          />
+                          <TimePicker
+                            label="Select Time"
+                            value={selectedTime}
+                            onChange={(newValue) => setSelectedTime(newValue)}
+                            slotProps={{
+                              textField: {
+                                variant: "outlined",
+                                error: false,
+                              },
+                            }}
+                          />
+                        </Box>
                       </Box>
-                    </Box>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "8px",
-                      }}
-                    >
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        To:
-                      </Typography>
+                      {/* To Section */}
                       <Box
                         sx={{
-                          display: "flex",
+                            display: "flex",
                           flexDirection: "column",
-                          gap: "10px",
+                          gap: "8px",
                         }}
                       >
-                        <DatePicker
-                          label="Select Date"
-                          value={selectedDate}
-                          onChange={(newValue) => setSelectedDate(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          To:
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px",
                           }}
-                        />
-                        <TimePicker
-                          label="Select Time"
-                          value={selectedTime}
-                          onChange={(newValue) => setSelectedTime(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
-                          }}
-                        />
+                        >
+                          <DatePicker
+                            label="Select Date"
+                            value={selectedEndDate} // Use selectedEndDate
+                            onChange={(newValue) => setSelectedEndDate(newValue)}
+                            slotProps={{
+                              textField: {
+                                variant: "outlined",
+                                error: false,
+                              },
+                            }}
+                          />
+                          <TimePicker
+                            label="Select Time"
+                            value={selectedTime}
+                            onChange={(newValue) => setSelectedTime(newValue)}
+                            slotProps={{
+                              textField: {
+                                variant: "outlined",
+                                error: false,
+                              },
+                            }}
+                          />
+                        </Box>
                       </Box>
-                    </Box>
 
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      sx={{
-                        marginTop: "20px",
-                        backgroundColor: "#04122E",
-                        "&:hover": {
-                          backgroundColor: "#0F0d21", 
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
-                  </Box>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{
+                          marginTop: "20px",
+                          backgroundColor: "#04122E",
+                          "&:hover": {
+                            backgroundColor: "#0F0d21", // Slightly darker color on hover
+                          },
+                        }}
+                      >
+                        Confirm
+                      </Button>
+                    </Box>
+                  </form>
                 )}
 
                 {activeTab === 1 && (
@@ -277,7 +379,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                       >
                         <DatePicker
                           label="Select Date"
-                          value={selectedDate}
+                          value={selectedDate} // You might want separate state for Bulk tab
                           onChange={(newValue) => setSelectedDate(newValue)}
                           slotProps={{
                             textField: {
@@ -288,7 +390,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                         />
                         <TimePicker
                           label="Select Time"
-                          value={selectedTime}
+                          value={selectedTime} // You might want separate state for Bulk tab
                           onChange={(newValue) => setSelectedTime(newValue)}
                           slotProps={{
                             textField: {
@@ -322,7 +424,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                       >
                         <DatePicker
                           label="Select Date"
-                          value={selectedDate}
+                          value={selectedDate} // You might want separate state for Bulk tab
                           onChange={(newValue) => setSelectedDate(newValue)}
                           slotProps={{
                             textField: {
@@ -334,7 +436,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
 
                         <TimePicker
                           label="Select Time"
-                          value={selectedTime}
+                          value={selectedTime} // You might want separate state for Bulk tab
                           onChange={(newValue) => setSelectedTime(newValue)}
                           slotProps={{
                             textField: {
@@ -383,7 +485,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                         marginTop: "20px",
                         backgroundColor: "#04122E",
                         "&:hover": {
-                          backgroundColor: "#0F0d21", // Slightly darker color on hover
+                          backgroundColor: "#0F0d21", 
                         },
                       }}
                     >
