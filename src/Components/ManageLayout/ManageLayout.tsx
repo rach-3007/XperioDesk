@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Toolbar, TextField, Button, Divider, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Slide } from '@mui/material';
 import { styled } from '@mui/system';
 import { Seat, ConferenceRoom, Cabin, Partition, EntryPoint } from './OfficeElements'; // Assuming these are in a separate file
+import axios from 'axios'; // Ensure axios is imported
 
 const ManageLayoutContainer = styled(Box)({
   display: 'flex',
@@ -74,6 +75,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
 });
 
+// (The rest of your imports and styled components remain the same)
+
 const ManageLayout: React.FC = () => {
   const [seatsPerCubicle, setSeatsPerCubicle] = useState<number | string>(4);
   const [cubiclesPerRow, setCubiclesPerRow] = useState<number | string>(2);
@@ -82,7 +85,7 @@ const ManageLayout: React.FC = () => {
   const [markEntryPoint, setMarkEntryPoint] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [seatNumbers, setSeatNumbers] = useState<string>('');
-  const [moduleName, setModuleName] = useState<string>('');
+  const [moduleName, setModuleName] = useState<string>('');             
   const [accessDUs, setAccessDUs] = useState<string>('');
 
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number | string>>) => (
@@ -98,11 +101,43 @@ const ManageLayout: React.FC = () => {
   const addElement = (element: JSX.Element) => {
     setElements([...elements, element]);
   };
-  
 
-  const handleSaveLayout = () => {
-    // Implement your save logic here
-    alert('Layout saved!');
+  const handleSaveModal = async () => {
+    // Collect the positions and types of each element
+    const layoutEntities = elements.map((element, index) => ({
+      id: element.key || index,
+      type: element.type,
+      x_position: element.props.xPosition || 0,
+      y_position: element.props.yPosition || 0,
+      rotation: element.props.rotation || 0,
+      seatNumbers: element.type === Seat ? seatNumbers.split(',').map(num => num.trim()) : null,
+    }));
+    
+    const entryPoint = markEntryPoint ? {
+      x_position: entryPointProps?.xPosition,
+      y_position: entryPointProps?.yPosition,
+    } : null;
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/layouts/save',     
+        {
+        module_name: moduleName,
+        access_dus: accessDUs.split(',').map(du => du.trim()),
+        layout_entities: layoutEntities,
+        entry_point: entryPoint,
+      });
+
+      if (response.status === 200) {
+        alert('Layout details saved!');
+      } else {
+        alert('Failed to save layout. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving layout:', error);
+      alert('An error occurred while saving the layout.');
+    }
+
+    setOpenModal(false);
   };
 
   const handleConfirmLayout = () => {
@@ -110,12 +145,6 @@ const ManageLayout: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  const handleSaveModal = () => {
-    // Save the layout with the provided details
-    alert('Layout details saved!');
     setOpenModal(false);
   };
 
@@ -183,6 +212,8 @@ const ManageLayout: React.FC = () => {
           label="Module Name"
           variant="outlined"
           size="small"
+          value={moduleName}
+          onChange={handleInputChange(setModuleName)}
         />
         <Divider style={{ backgroundColor: '#4A5568', margin: '16px 0' }} />
         <StyledTextField
@@ -262,34 +293,21 @@ const ManageLayout: React.FC = () => {
             onChange={(e) => setSeatNumbers(e.target.value)}
           />
           <StyledTextField
-            label="Module Name"
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={moduleName}
-            onChange={(e) => setModuleName(e.target.value)}
-            style={{ marginTop: '16px' }}
-          />
-          <StyledTextField
-            label="DUs with Access (comma separated)"
+            label="Accessible DUs (comma separated)"
             variant="outlined"
             size="small"
             fullWidth
             value={accessDUs}
             onChange={(e) => setAccessDUs(e.target.value)}
-            style={{ marginTop: '16px' }}
           />
-          <Typography variant="caption" color="textSecondary" style={{ marginTop: '16px' }}>
-            Note: You can change the DUs with access later in the settings.
-          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal} color="inherit">
+          <StyledButton onClick={handleCloseModal} color="secondary">
             Cancel
-          </Button>
-          <Button onClick={handleSaveModal} variant="contained" color="primary">
-            Save
-          </Button>
+          </StyledButton>
+          <StyledButton onClick={handleSaveModal} color="primary">
+            Save Layout
+          </StyledButton>
         </DialogActions>
       </Dialog>
     </ManageLayoutContainer>

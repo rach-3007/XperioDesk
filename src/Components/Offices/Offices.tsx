@@ -7,6 +7,7 @@ import {
   Grid,
   Box,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import AddOfficeDrawer from "./AddOfficeDrawer";
 
 interface Office {
@@ -30,6 +31,7 @@ const getInitials = (name: string): string => {
 const Offices: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>(officesData);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate(); // Hook for navigation
 
   const toggleOfficeStatus = (id: number): void => {
     setOffices((prevOffices) =>
@@ -45,6 +47,11 @@ const Offices: React.FC = () => {
 
   const handleCloseDrawer = () => {
     setDrawerOpen(false);
+  };
+
+  const handleCardClick = (id: number) => {
+    // Navigate to Moduless component with office ID as a route parameter if needed
+    navigate("/modules");
   };
 
   return (
@@ -97,7 +104,9 @@ const Offices: React.FC = () => {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
+                  cursor: "pointer", // Indicate clickable
                 }}
+                onClick={() => handleCardClick(office.id)}
               >
                 <Typography
                   variant="h4"
@@ -127,7 +136,10 @@ const Offices: React.FC = () => {
                       textTransform: "none",
                     }}
                     color={office.enabled ? "primary" : "secondary"}
-                    onClick={() => toggleOfficeStatus(office.id)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent card click event
+                      toggleOfficeStatus(office.id);
+                    }}
                   >
                     {office.enabled ? "Disable" : "Enable"}
                   </Button>

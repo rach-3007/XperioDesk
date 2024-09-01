@@ -257,7 +257,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                     </TextField>
                     <Box
                       sx={{
-                        display: "flex",
+                        display: "flex",  
                         flexDirection: "column",
                         gap: "8px",
                       }}

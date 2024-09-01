@@ -5,7 +5,7 @@ import Draggable from 'react-draggable';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-import DeleteIcon from '@mui/icons-material/Delete';
+// import DeleteIcon from '@mui/icons-material/Delete';
 import RotateRightIcon from '@mui/icons-material/RotateRight';
 
 // Seat Container
@@ -78,10 +78,10 @@ const Seat = ({ onDelete }) => {
               onClick={handleRotate}
               style={{ cursor: 'pointer', color: '#000000' }}
             />
-            <DeleteIcon
+            {/* <DeleteIcon
               onClick={onDelete}
               style={{ cursor: 'pointer', color: '#FF6347' }}
-            />
+            /> */}
           </Controls>
         </SeatContainer>
       </div>

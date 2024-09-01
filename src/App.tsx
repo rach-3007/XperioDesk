@@ -14,8 +14,9 @@ import SettingsPage from "./Pages/SettingsPage";
 // import NotificationsPage from "./Pages/NotificationsPage";
 import OfficesPage from "./Pages/OfficesPage";
 import AssignRolePage from "./Pages/AssignRolePage";
-// import BookDeskPage from "./Pages/BookDeskPage";
+import BookDesk from "./Components/BookDesk/BookDesk";
 import ManageLayoutPage from "./Pages/ManageLayout/ManageLayoutPage";
+import Moduless from "./Components/Offices/Moduless";
 
 const AppContent = () => {
   const location = useLocation();
@@ -36,10 +37,11 @@ const AppContent = () => {
           <Route path="/reports" element={<ReportsPage />} />
           {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
           <Route path="/assign-role" element={<AssignRolePage />} />
-          {/* <Route path="/book-desk" element={<BookDeskPage />} /> */}
+          <Route path="/book-desk" element={<BookDesk />} />
           <Route path="/offices" element={<OfficesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/manage-layout" element={<ManageLayoutPage />} />
+          <Route path="/modules" element={<Moduless />} />
 
           {/* Route to User View All Bookings Page */}
           <Route path="/user/bookings" element={<UserViewAllBookingsPage />} />
