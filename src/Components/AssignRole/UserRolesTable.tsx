@@ -1,38 +1,62 @@
 // UserRolesTable.tsx
-import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem } from '@mui/material';
+import axiosInstance from '../../Config/AxiosConfig'; // Adjust the import path based on your project structure
 
-const UserRolesTable: React.FC = () => {
-  const [roles, setRoles] = useState([
-    { name: 'Amal Rajeev', email: 'amalrajeev2075@gmail.com', status: 'Active', role: 'Admin', seating: 'Permanent' },
-    { name: 'Rachel Rajan', email: 'amalrajeev2075@gmail.com', status: 'Blocked', role: 'Admin', seating: 'Permanent' },
-    { name: 'Sethu M', email: 'amalrajeev2075@gmail.com', status: 'Active', role: 'User', seating: 'Permanent' },
-    { name: 'Dimple', email: 'amalrajeev2075@gmail.com', status: 'Active', role: 'User', seating: 'Permanent' },
-    { name: 'Sethu M', email: 'amalrajeev2075@gmail.com', status: 'Active', role: 'User', seating: 'Permanent' },
-    { name: 'Sethu M', email: 'amalrajeev2075@gmail.com', status: 'Active', role: 'User', seating: 'Normal' },
-  ]);
+interface UserRole {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+interface UserRolesTableProps {
+  searchTerm: string;
+}
 
-  const handleRoleChange = (index: number, newRole: string) => {
+const UserRolesTable: React.FC<UserRolesTableProps> = ({ searchTerm }) => {
+  const [roles, setRoles] = useState<UserRole[]>([]);
+  const [filteredRoles, setFilteredRoles] = useState<UserRole[]>([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axiosInstance.get('/api/users-with-roles');
+        setRoles(response.data);
+        setFilteredRoles(response.data); // Initialize with all users
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  // Filter roles based on the search term
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredRoles(roles); // If search term is empty, show all roles
+    } else {
+      const lowercasedTerm = searchTerm.toLowerCase();
+      const filtered = roles.filter((role) =>
+        role.name.toLowerCase().includes(lowercasedTerm) || role.email.toLowerCase().includes(lowercasedTerm)
+      );
+      setFilteredRoles(filtered);
+    }
+  }, [searchTerm, roles]);
+  const handleRoleChange = async (index: number, newRole: string) => {
     const updatedRoles = roles.map((role, i) =>
       i === index ? { ...role, role: newRole } : role
     );
     setRoles(updatedRoles);
-  };
 
-  const handleSeatingChange = (index: number, newSeating: string) => {
-    const updatedRoles = roles.map((role, i) =>
-      i === index ? { ...role, seating: newSeating } : role
-    );
-    setRoles(updatedRoles);
-  };
-
-  const handleStatusToggle = (index: number) => {
-    const updatedRoles = roles.map((role, i) =>
-      i === index
-        ? { ...role, status: role.status === 'Active' ? 'Blocked' : 'Active' }
-        : role
-    );
-    setRoles(updatedRoles);
+    // Update the role in the backend
+    try {
+      const user = updatedRoles[index];
+      await axiosInstance.put(`/api/users/${user.id}/update-role`, { role: newRole });
+      console.log('Role updated successfully');
+    } catch (error) {
+      console.error('Error updating role:', error);
+    }
   };
 
   return (
@@ -42,24 +66,14 @@ const UserRolesTable: React.FC = () => {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Status</TableCell>
             <TableCell>User Role</TableCell>
-            <TableCell>Seating Type</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {roles.map((role, index) => (
-            <TableRow key={index}>
+        {filteredRoles.map((role, index) => (
+            <TableRow key={role.id}>
               <TableCell>{role.name}</TableCell>
               <TableCell>{role.email}</TableCell>
-              <TableCell
-                onClick={() => handleStatusToggle(index)}
-                style={{ cursor: 'pointer' }}
-              >
-                <Typography sx={{ color: role.status === 'Active' ? 'green' : 'red' }}>
-                  {role.status}
-                </Typography>
-              </TableCell>
               <TableCell>
                 <Select
                   value={role.role}
@@ -67,15 +81,6 @@ const UserRolesTable: React.FC = () => {
                 >
                   <MenuItem value="Admin">Admin</MenuItem>
                   <MenuItem value="User">User</MenuItem>
-                </Select>
-              </TableCell>
-              <TableCell>
-                <Select
-                  value={role.seating}
-                  onChange={(e) => handleSeatingChange(index, e.target.value as string)}
-                >
-                  <MenuItem value="Permanent">Permanent</MenuItem>
-                  <MenuItem value="Normal">Normal</MenuItem>
                 </Select>
               </TableCell>
             </TableRow>
