@@ -1,11 +1,14 @@
 // AssignRolePage.tsx
-import React from "react";
+
+import React, { useState } from "react";
 import { Box, } from "@mui/material";
 import SearchBar from "./SearchBar";
 import UserRolesTable from "./UserRolesTable";
 import HeaderBarAdmin from "../Shared/HeaderBarAdmin/HeaderBarAdmin";
 
 const AssignRole: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <Box sx={{ display: "flex", width: "83vw", overFlowX: "hidden" }}>
       <Box sx={{display:'flex',flexDirection:'column', width: "98.6vw",mb:'10px'}}>
@@ -23,9 +26,9 @@ const AssignRole: React.FC = () => {
         }}
       >
         <Box sx={{pt:3}}>
-        <SearchBar />
+        <SearchBar onSearch={(term) => setSearchTerm(term)} />
         </Box>
-        <UserRolesTable />
+        <UserRolesTable searchTerm={searchTerm} />
       </Box>
       </Box>
     </Box>
