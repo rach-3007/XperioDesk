@@ -1,82 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// // Import your components for different types
-// import SeatComponent from './SeatComponent';
-// import CabinComponent from './CabinComponent';
-// import ConferenceComponent from './ConferenceComponent';
-// import PartitionComponent from './PartitionComponent';
-// import EntranceComponent from './EntranceComponent';
-
-// // Define a type for layout entities
-// type LayoutEntity = {
-//   id: number;
-//   layout_id: number;
-//   type: 'Seat' | 'Cabin' | 'Conference' | 'Partition' | 'Entrance';
-//   'x-position': string;
-//   'y-position': string;
-//   rotation: string;
-//   created_at: string;
-//   updated_at: string;
-//   additionalDetails: string;
-// };
-
-// type LayoutResponse = {
-//   id: number;
-//   module_id: number;
-//   name: string;
-//   created_at: string;
-//   updated_at: string;
-//   deleted_at: string | null;
-//   layout_entities: LayoutEntity[];
-// };
-
-// const LayoutComponent: React.FC<{ layoutId: number }> = ({ layoutId }) => {
-//   const [layout, setLayout] = useState<LayoutResponse | null>(null);
-//   const [loading, setLoading] = useState<boolean>(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     // Fetch data from the API
-//     axios.get(`/api/${layoutId}/entities`)
-//       .then(response => {
-//         setLayout(response.data.layout.original);
-//         setLoading(false);
-//       })
-//       .catch(err => {
-//         setError('Failed to load layout data');
-//         setLoading(false);
-//       });
-//   }, [layoutId]);
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>{error}</div>;
-
-//   return (
-//     <div>
-//       {layout?.layout_entities.map(entity => {
-//         switch (entity.type) {
-//           case 'Seat':
-//             return <SeatComponent key={entity.id} position={{ x: entity['x-position'], y: entity['y-position'] }} rotation={entity.rotation} />;
-//           case 'Cabin':
-//             return <CabinComponent key={entity.id} position={{ x: entity['x-position'], y: entity['y-position'] }} rotation={entity.rotation} />;
-//           case 'Conference':
-//             return <ConferenceComponent key={entity.id} position={{ x: entity['x-position'], y: entity['y-position'] }} rotation={entity.rotation} />;
-//           case 'Partition':
-//             return <PartitionComponent key={entity.id} position={{ x: entity['x-position'], y: entity['y-position'] }} rotation={entity.rotation} />;
-//           case 'Entrance':
-//             return <EntranceComponent key={entity.id} position={{ x: entity['x-position'], y: entity['y-position'] }} rotation={entity.rotation} />;
-//           default:
-//             return null;
-//         }
-//       })}
-//     </div>
-//   );
-// };
-
-// export default LayoutComponent;
-
-
 import React, { useEffect, useState } from 'react';
 import { Seat, Cabin, ConferenceRoom, Partition, EntryPoint } from '../ManageLayout/OfficeElements';
 
@@ -88,7 +9,7 @@ const BookDesk = () => {
   useEffect(() => {
     const fetchLayout = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/layouts/6/entities');
+        const response = await fetch('http://127.0.0.1:8000/api/layouts/62/entities');
         if (!response.ok) {
           throw new Error('Failed to fetch layout data');
         }
@@ -104,22 +25,24 @@ const BookDesk = () => {
   }, []);
   
   const renderEntity = (entity) => {
+    console.log('Entity Data:', entity);
     const { type, rotation } = entity;
-    const xPosition = entity['x-position'];
-    const yPosition = entity['y-position'];
+    const xPosition = parseInt(entity['x_position'], 10) || 0; 
+    const yPosition = parseInt(entity['y_position'], 10) || 0;
   
     const commonProps = {
       style: {
-        position: 'absolute',
+        position: 'relative',
         left: `${xPosition}px`,
         top: `${yPosition}px`,
         transform: `rotate(${rotation}deg)`,
       },
+      draggable: false,
     };
-  
+    console.log(commonProps);
     switch (type.toLowerCase()) {
       case 'seat':
-        return <Seat key={entity.id} {...commonProps} />;
+        return <Seat key={entity.id} {...commonProps}/>;
       case 'cabin':
         return <Cabin key={entity.id} {...commonProps} />;
       case 'conference_room':

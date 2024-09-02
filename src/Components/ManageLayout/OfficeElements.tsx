@@ -59,17 +59,29 @@ const Controls = styled(Box)({
 });
 
 // Seat Component
-const Seat = ({ onDelete }) => {
+const Seat = ({style }) => {
   const [rotate, setRotate] = useState(0);
 
   const handleRotate = (e) => {
     e.stopPropagation(); // Prevents the click event from propagating to the seat container
     setRotate((prevRotate) => (prevRotate + 15) % 360); // Rotate in 90-degree increments
   };
+  // const SeatContent = (
+  //   <SeatContainer style={style} rotate={rotate}>
+  //     <Backrest />
+  //     <SeatArea />
+  //     <Controls>
+  //       <RotateRightIcon
+  //         onClick={handleRotate}
+  //         style={{ cursor: 'pointer', color: '#000000' }}
+  //       />
+  //     </Controls>
+  //   </SeatContainer>
+  // );
 
   return (
     <Draggable>
-      <div>
+      <div style={style}>
         <SeatContainer rotate={rotate}>
           <Backrest />
           <SeatArea />
@@ -164,37 +176,45 @@ const EntranceText = styled(Box)({
 });
 
 // Cabin Component with Draggable
-const CabinComponent = () => (
+const CabinComponent = ({style}) => (
   <Draggable>
+    <div style={style}>
     <Cabin>
       <CabinIcon />
     </Cabin>
+    </div>
   </Draggable>
 );
 
 // Conference Room Component with Draggable
-const ConferenceRoomComponent = () => (
+const ConferenceRoomComponent = ({style}) => (
   <Draggable>
+    <div style={style}>
     <ConferenceRoom>
       <ConferenceRoomIcon />
     </ConferenceRoom>
+    </div>
   </Draggable>
 );
 
 // Partition Component with Draggable
-const PartitionComponent = () => (
+const PartitionComponent = ({style }) => (
   <Draggable>
+    <div style={style}>
     <Partition />
+    </div>
   </Draggable>
 );
 
 // Entry Point Component with Draggable
-const EntryPointComponent = () => (
+const EntryPointComponent = ({style }) => (
   <Draggable>
+    <div style={style}>
     <EntryPointContainer>
       <ArrowIcon />
       <EntranceText>Entrance</EntranceText>
     </EntryPointContainer>
+    </div>
   </Draggable>
 );
 
