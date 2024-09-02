@@ -16,6 +16,8 @@ import OfficesPage from "./Pages/OfficesPage";
 import AssignRolePage from "./Pages/AssignRolePage";
 // import BookDeskPage from "./Pages/BookDeskPage";
 import ManageLayoutPage from "./Pages/ManageLayout/ManageLayoutPage";
+import ViewLayout from "./Components/BookDesk/BookDesk";
+
 
 const AppContent = () => {
   const location = useLocation();
@@ -36,7 +38,7 @@ const AppContent = () => {
           <Route path="/reports" element={<ReportsPage />} />
           {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
           <Route path="/assign-role" element={<AssignRolePage />} />
-          {/* <Route path="/book-desk" element={<BookDeskPage />} /> */}
+          <Route path="/book-desk" element={<ViewLayout />} />
           <Route path="/offices" element={<OfficesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/manage-layout" element={<ManageLayoutPage />} />

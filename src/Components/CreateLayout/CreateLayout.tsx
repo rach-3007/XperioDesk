@@ -290,7 +290,7 @@ const LayoutManager: React.FC = () => {
                             return null;
                         })}
                     </Layer>
-                </Stage>
+                </Stage>    
             </Container>
         </Box>
     );

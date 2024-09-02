@@ -19,6 +19,7 @@ import dayjs, { Dayjs } from "dayjs";
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
+  selectedSeat: any;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -33,9 +34,9 @@ const RightSideBox = styled(Box)(({ theme }) => ({
   right: 0,
   top: 0,
   height: "100%",
-  width: "400px", // Adjust the width as needed
-  backgroundColor: "#F5F6FF", // Background color to match the dialog content
-  boxShadow: theme.shadows[5], // Optional: for a subtle shadow
+  width: "400px", 
+  backgroundColor: "#F5F6FF",
+  boxShadow: theme.shadows[5], 
 }));
 
 interface User {
@@ -43,16 +44,12 @@ interface User {
   name: string;
 }
 
-const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
+const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, selectedSeat }) => {
+  const seatId = selectedSeat?.id || "";  
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedTime, setSelectedTime] = useState<Dayjs | null>(dayjs());
   const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(dayjs()); 
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -64,9 +61,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
 
         if (
           Array.isArray(data.data) &&
-          data.data.every((item) => {
-            return typeof item.id === "number" && typeof item.name === "string";
-          })
+          data.data.every((item) => typeof item.id === "number" && typeof item.name === "string")
         ) {
           setUsers(data.data);
         } else {
@@ -82,25 +77,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
     fetchUsers();
   }, []);
 
-  //booking logic
-  const seatId = "1"; // Replace with actual seat selection logic
-
-  const handleBookingSubmit = async (event: React.FormEvent) => {
-    // Create the payload object
-  const payload = {
-    seat_id: seatId,
-    user_id: selectedUser.id,
-    start_date: selectedDate.format("YYYY-MM-DD"), 
-    end_date: selectedEndDate.format("YYYY-MM-DD"), 
-    booked_by: 1 // Replace with Auth::user()->id from your backend
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
-  // Log the payload to the console
-  console.log("Booking payload:", payload);
+  const handleBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!selectedUser || !seatId || !selectedDate || !selectedTime) {
-      // Handle missing data (e.g., show an error message)
+    if (!selectedUser || !seatId || !selectedDate || !selectedEndDate) {
       console.error("Missing required booking data");
       return;
     }
@@ -110,29 +94,26 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Add any necessary authentication headers here (e.g., 'Authorization': 'Bearer ' + yourAuthToken)
         },
         body: JSON.stringify({
           seat_id: seatId,
           user_id: selectedUser.id,
-          start_date: selectedDate.format("YYYY-MM-DD"), 
-          end_date: selectedEndDate.format("YYYY-MM-DD"), 
-          booked_by: 1 // Replace with Auth::user()->id from your backend
+          start_date: selectedDate.format("YYYY-MM-DD"),
+          end_date: selectedEndDate.format("YYYY-MM-DD"),
+          booked_by: 1, 
         }),
       });
 
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Booking successful:", bookingData);
-        onClose(); 
+        onClose();
       } else {
         const errorData = await response.json();
         console.error("Booking failed:", errorData);
-        // Display a user-friendly error message based on errorData
       }
     } catch (error) {
       console.error("Error during booking:", error);
-      // Display a generic error message
     }
   };
 
@@ -149,7 +130,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
           right: 0,
           top: 0,
           height: "100vh",
-          width: "400px", // Adjust the width as needed
+          width: "400px",
           margin: 0,
         },
       }}
@@ -184,13 +165,13 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                     centered
                     sx={{
                       ".MuiTab-root": {
-                        color: "white", // Default text color
+                        color: "white", 
                       },
                       ".Mui-selected": {
-                        color: "white", // Selected tab text color
+                        color: "white", 
                       },
                       ".MuiTabs-indicator": {
-                        backgroundColor: "white", // Underline indicator color
+                        backgroundColor: "white", 
                       },
                     }}
                   >
@@ -207,291 +188,61 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose }) => {
                         padding: "10px",
                         backgroundColor: "#F5F6FF",
                         borderRadius: "2px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
+                        marginBottom: "10px",
                       }}
                     >
                       <Autocomplete
-                        id="user-select"
                         options={users}
-                        getOptionLabel={(user) => user.name}
+                        getOptionLabel={(option) => option.name}
                         value={selectedUser}
-                        onChange={(event, newValue) => {
-                          setSelectedUser(newValue);
-                        }}
+                        onChange={(event, newValue) => setSelectedUser(newValue)}
                         renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Select User"
-                            variant="outlined"
-                          />
+                          <TextField {...params} label="User Name" />
                         )}
                         fullWidth
-                        margin="normal"
+                        sx={{ marginBottom: "10px" }}
                       />
 
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "8px",
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          From:
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "10px",
-                          }}
-                        >
-                          <DatePicker
-                            label="Select Date"
-                            value={selectedDate}
-                            onChange={(newValue) => setSelectedDate(newValue)}
-                            slotProps={{
-                              textField: {
-                                variant: "outlined",
-                                error: false,
-                              },
-                            }}
-                          />
-                          <TimePicker
-                            label="Select Time"
-                            value={selectedTime}
-                            onChange={(newValue) => setSelectedTime(newValue)}
-                            slotProps={{
-                              textField: {
-                                variant: "outlined",
-                                error: false,
-                              },
-                            }}
-                          />
-                        </Box>
-                      </Box>
-
-                      {/* To Section */}
-                      <Box
-                        sx={{
-                            display: "flex",
-                          flexDirection: "column",
-                          gap: "8px",
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          To:
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "10px",
-                          }}
-                        >
-                          <DatePicker
-                            label="Select Date"
-                            value={selectedEndDate} // Use selectedEndDate
-                            onChange={(newValue) => setSelectedEndDate(newValue)}
-                            slotProps={{
-                              textField: {
-                                variant: "outlined",
-                                error: false,
-                              },
-                            }}
-                          />
-                          <TimePicker
-                            label="Select Time"
-                            value={selectedTime}
-                            onChange={(newValue) => setSelectedTime(newValue)}
-                            slotProps={{
-                              textField: {
-                                variant: "outlined",
-                                error: false,
-                              },
-                            }}
-                          />
-                        </Box>
-                      </Box>
-
-                      <Button
-                        type="submit"
-                        variant="contained"
+                      <DatePicker
+                        label="Start Date"
+                        value={selectedDate}
+                        onChange={(newValue) => setSelectedDate(newValue)}
+                        format="YYYY-MM-DD"
                         fullWidth
-                        sx={{
-                          marginTop: "20px",
-                          backgroundColor: "#04122E",
-                          "&:hover": {
-                            backgroundColor: "#0F0d21", // Slightly darker color on hover
-                          },
-                        }}
-                      >
-                        Confirm
-                      </Button>
+                        sx={{ marginBottom: "10px" }}
+                      />
+
+                      <DatePicker
+                        label="End Date"
+                        value={selectedEndDate}
+                        onChange={(newValue) => setSelectedEndDate(newValue)}
+                        format="YYYY-MM-DD"
+                        fullWidth
+                        sx={{ marginBottom: "10px" }}
+                      />
+
+                      <TimePicker
+                        label="Select Time"
+                        value={selectedTime}
+                        onChange={(newValue) => setSelectedTime(newValue)}
+                        fullWidth
+                      />
                     </Box>
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        backgroundColor: "#06236F",
+                        padding: "15px",
+                        color: "#F5F6FF",
+                      }}
+                    >
+                      Submit
+                    </Button>
                   </form>
-                )}
-
-                {activeTab === 1 && (
-                  <Box
-                    sx={{
-                      padding: "10px",
-                      backgroundColor: "#f9f9f9",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      Selected Seats: TVM2-M1-WS-21
-                    </Typography>
-                    <TextField label="Organizer" fullWidth select>
-                      <MenuItem value="organizer1">Organizer 1</MenuItem>
-                    </TextField>
-                    <TextField label="Enter Participants" fullWidth select>
-                      <MenuItem value="participant1">Participant 1</MenuItem>
-                    </TextField>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "8px",
-                      }}
-                    >
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        From:
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "10px",
-                        }}
-                      >
-                        <DatePicker
-                          label="Select Date"
-                          value={selectedDate} // You might want separate state for Bulk tab
-                          onChange={(newValue) => setSelectedDate(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
-                          }}
-                        />
-                        <TimePicker
-                          label="Select Time"
-                          value={selectedTime} // You might want separate state for Bulk tab
-                          onChange={(newValue) => setSelectedTime(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
-                          }}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "8px",
-                      }}
-                    >
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        To:
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "10px",
-                        }}
-                      >
-                        <DatePicker
-                          label="Select Date"
-                          value={selectedDate} // You might want separate state for Bulk tab
-                          onChange={(newValue) => setSelectedDate(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
-                          }}
-                        />
-
-                        <TimePicker
-                          label="Select Time"
-                          value={selectedTime} // You might want separate state for Bulk tab
-                          onChange={(newValue) => setSelectedTime(newValue)}
-                          slotProps={{
-                            textField: {
-                              variant: "outlined",
-                              error: false,
-                            },
-                          }}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      sx={{
-                        marginTop: "20px",
-                        backgroundColor: "#04122E",
-                        "&:hover": {
-                          backgroundColor: "#0F0d21", // Slightly darker color on hover
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
-                  </Box>
-                )}
-                {activeTab === 2 && (
-                  <Box
-                    sx={{
-                      padding: "10px",
-                      backgroundColor: "#f9f9f9",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      Selected Seat: TVM2-M1-WS-21
-                    </Typography>
-                    <TextField label="User" fullWidth select>
-                      <MenuItem value="user1">User 1</MenuItem>
-                      <MenuItem value="user2">User 2</MenuItem>
-                    </TextField>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      sx={{
-                        marginTop: "20px",
-                        backgroundColor: "#04122E",
-                        "&:hover": {
-                          backgroundColor: "#0F0d21", 
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
-                  </Box>
                 )}
               </DialogContent>
             </Box>
