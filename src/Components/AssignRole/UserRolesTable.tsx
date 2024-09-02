@@ -7,7 +7,11 @@ interface UserRole {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role_id: number;
+  role: {
+    id: number,
+    role_name: string;
+  };
 }
 interface UserRolesTableProps {
   searchTerm: string;
@@ -43,22 +47,30 @@ const UserRolesTable: React.FC<UserRolesTableProps> = ({ searchTerm }) => {
       setFilteredRoles(filtered);
     }
   }, [searchTerm, roles]);
-  const handleRoleChange = async (index: number, newRole: string) => {
+
+  const handleRoleChange = async (index: number, newRoleName: string) => {
     const updatedRoles = roles.map((role, i) =>
-      i === index ? { ...role, role: newRole } : role
+      i === index ? { ...role, role: { ...role.role, role_name: newRoleName } } : role
     );
     setRoles(updatedRoles);
 
     // Update the role in the backend
     try {
       const user = updatedRoles[index];
-      await axiosInstance.put(`/api/users/${user.id}/update-role`, { role: newRole });
+      await axiosInstance.put(`/api/users/${user.id}/update-role`, { role: newRoleName });
       console.log('Role updated successfully');
     } catch (error) {
       console.error('Error updating role:', error);
     }
   };
 
+  const mapRoleName = (roleName: string) => {
+    if (roleName === 'Admin' || roleName === 'User') {
+      return roleName;
+    }
+    // Default fallback to "User" if role name is unrecognized
+   
+  };
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -76,7 +88,7 @@ const UserRolesTable: React.FC<UserRolesTableProps> = ({ searchTerm }) => {
               <TableCell>{role.email}</TableCell>
               <TableCell>
                 <Select
-                  value={role.role}
+                  value={mapRoleName(role.role.role_name)} // Map the role name to expected values
                   onChange={(e) => handleRoleChange(index, e.target.value as string)}
                 >
                   <MenuItem value="Admin">Admin</MenuItem>

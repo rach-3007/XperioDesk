@@ -11,7 +11,7 @@ const SettingsPage: React.FC = () => {
   const handleClose = () => setOpen(false);
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh',  width: "82vw", overFlowX: "hidden", backgroundColor:'#F6F7FF' }}>
+    <Box sx={{ display: 'flex', height: '100vh',  width: "84vw", overFlowX: "hidden", backgroundColor:'#F6F7FF' }}>
       <Box sx={{ flexGrow: 1 }}>
         <HeaderBarAdmin title="Settings" username="Rachel Rajan" />
         <Box sx={{backgroundColor:'white', p: 3,mt:10 }}>
