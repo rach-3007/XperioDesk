@@ -15,7 +15,8 @@ const ManageLayout: React.FC = () => {
   const handleDragStop = (e, data, index) => {
     const { x, y } = data;
     const updatedElements = [...elements];
-    updatedElements[index] = { ...updatedElements[index], x, y };
+    updatedElements[index] = { ...updatedElements[index], x: data.x, y: data.y };
+    console.log(`Dragging stopped at x: ${x}, y: ${y}`);
     setElements(updatedElements);
   };
 
