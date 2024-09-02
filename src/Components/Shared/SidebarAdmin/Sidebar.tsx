@@ -4,7 +4,7 @@ import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import ReportIcon from '@mui/icons-material/Assessment';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+// import NotificationsIcon from '@mui/icons-material/Notifications';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import DeskIcon from '@mui/icons-material/DesktopWindows';
 import OfficeIcon from '@mui/icons-material/Business';
@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
     { text: 'Dashboard', icon: <DashboardIcon sx={{ color: 'gray' }} />, path: '/home' },
     { text: 'Analytics', icon: <AnalyticsIcon sx={{ color: 'gray' }} />, path: '/analytics' },
     { text: 'Reports', icon: <ReportIcon sx={{ color: 'gray' }} />, path: '/reports' },
-    { text: 'Notifications', icon: <NotificationsIcon sx={{ color: 'gray' }} />, path: '/notifications' },
+    // { text: 'Notifications', icon: <NotificationsIcon sx={{ color: 'gray' }} />, path: '/notifications' },
     { text: 'Assign Role', icon: <AssignmentIndIcon sx={{ color: 'gray' }} />, path: '/assign-role' },
     { text: 'Book Desk', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/book-desk' },
     { text: 'Offices', icon: <OfficeIcon sx={{ color: 'gray' }} />, path: '/offices' },

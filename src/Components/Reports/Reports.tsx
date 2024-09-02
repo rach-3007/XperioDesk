@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Collapse } from "@mui/material";
+
 import {
   Box,
   TextField,
@@ -14,52 +16,57 @@ import {
   TableSortLabel,
   Typography,
   Paper,
+  Tooltip,
 } from "@mui/material";
-import { ArrowDropDown, Download, Add } from "@mui/icons-material";
+import Edit from "@mui/icons-material/Edit";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  FilterAlt,
+  CalendarToday,
+  Download,
+  Add,
+  CheckCircle,
+  Cancel,
+  Person,
+  Lock,
+} from "@mui/icons-material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
 import { bookings } from "../../data";
 
 interface Booking {
   id: number;
   employeeName: string;
-  expId: number|string;
+  expId: number | string;
   seatNumber: string;
   office: string;
   dateOfBooking: string;
   loginStatus: string;
   status: string;
+  bookedBy?: string;
+  bookedFor?: string;
 }
 
 const Reports: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [datePickerAnchorEl, setDatePickerAnchorEl] = useState<null | HTMLElement>(null);
   const [currentColumn, setCurrentColumn] = useState<string>("");
-  const [filters, setFilters] = useState<Partial<Booking>>({
-    employeeName: "",
-    expId: "",
-    seatNumber: "",
-    office: "",
-    dateOfBooking: "",
-    loginStatus: "",
-    status: "",
-  });
+  const [filters, setFilters] = useState<Partial<Booking>>({});
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<keyof Booking>("expId");
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
   const navigate = useNavigate();
 
-  const handlePageChange = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     event?.preventDefault();
     setPage(newPage);
   };
 
-  const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -75,16 +82,10 @@ const Reports: React.FC = () => {
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters({
-      ...filters,
-      [currentColumn]: event.target.value,
-    });
+    setFilters({ ...filters, [currentColumn]: event.target.value });
   };
 
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof Booking
-  ) => {
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Booking) => {
     event?.preventDefault();
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -95,15 +96,33 @@ const Reports: React.FC = () => {
     navigate(`/view-or-edit-booking/${booking.id}`, { state: { booking } });
   };
 
-  const filteredBookings = bookings.filter((booking) =>
-    Object.keys(filters).every((key) => {
-      const filterValue = filters[key as keyof Booking];
-      return booking[key as keyof Booking]
-        ?.toString()
-        .toLowerCase()
-        .includes(filterValue?.toString().toLowerCase() || "");
-    })
-  );
+  const handleDateRangeChange = (index: number, date: Date | null) => {
+    const newDateRange = [...dateRange];
+    newDateRange[index] = date;
+    setDateRange(newDateRange as [Date | null, Date | null]);
+  };
+
+  const handleDatePickerClick = (event: React.MouseEvent<HTMLElement>) => {
+    setDatePickerAnchorEl(event.currentTarget);
+  };
+
+  const handleDatePickerClose = () => {
+    setDatePickerAnchorEl(null);
+  };
+
+  const filteredBookings = bookings.filter((booking) => {
+    return (
+      Object.keys(filters).every((key) => {
+        const filterValue = filters[key as keyof Booking];
+        return booking[key as keyof Booking]
+          ?.toString()
+          .toLowerCase()
+          .includes(filterValue?.toString().toLowerCase() || "");
+      }) &&
+      (!dateRange[0] || new Date(booking.dateOfBooking) >= dateRange[0]) &&
+      (!dateRange[1] || new Date(booking.dateOfBooking) <= dateRange[1])
+    );
+  });
 
   const sortedBookings = filteredBookings.sort((a, b) => {
     if (a[orderBy] < b[orderBy]) {
@@ -116,189 +135,222 @@ const Reports: React.FC = () => {
   });
 
   const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const datePickerOpen = Boolean(datePickerAnchorEl);
+  const id = open ? "filter-popover" : undefined;
+  const datePickerId = datePickerOpen ? "date-picker-popover" : undefined;
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Open":
+        return <CheckCircle color="success" />;
+      case "Closed":
+        return <Cancel color="error" />;
+      default:
+        return <Typography>No Status</Typography>;
+    }
+  };
+
+  const getLoginStatusIcon = (loginStatus: string) => {
+    switch (loginStatus) {
+      case "Logged In":
+        return <Person color="primary" sx={{ animation: "swipe-in 0.5s ease-in-out" }} />;
+      case "Logged Out":
+        return <Lock color="disabled" sx={{ animation: "swipe-in 0.5s ease-in-out" }} />;
+      default:
+        return <Typography>No Status</Typography>;
+    }
+  };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      
-      <Box
-        sx={{
-          flexGrow: 1,
-          ml:3,
-          mt: 2,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          mb={2}
-          sx={{
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-            padding: "10px",
-            borderRadius: "8px",
-            backgroundColor: "#fff",
-            maxWidth: "1020px",
-          }}
-        >
-          <TextField
-            label="Search"
-            variant="outlined"
-            sx={{
-              width: "200px",
-              "& .MuiInputBase-root": {
-                borderRadius: "7px",
-                backgroundColor: "#fff",
-                height: "30px",
-                padding: "0 8px",
-                fontSize: "0.875rem",
-                lineHeight: "1.2",
-              },
-              "& .MuiInputLabel-root": {
-                fontSize: "0.75rem",
-                lineHeight: "1.2",
-                transform: "translate(14px, 10px) scale(1)",
-              },
-              "& .MuiInputLabel-shrink": {
-                transform: "translate(14px, -6px) scale(0.75)",
-              },
-            }}
-          />
-
-          <Box>
-            <IconButton sx={{ color: "#0F172A" }}>
-              <Download />
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", p: 2 }}>
+      {/* Top Bar */}
+      <Box display="flex" justifyContent="space-between" mb={2} p={2} sx={{ boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)", borderRadius: "8px", backgroundColor: "#fff" }}>
+        <TextField
+          label="Search"
+          variant="outlined"
+          sx={{ width: "200px" }}
+        />
+        <Box display="flex" alignItems="center">
+          <Tooltip title="Download Data">
+            <IconButton sx={{ color: "#0F172A" }} size="small">
+              <Download fontSize="inherit" />
             </IconButton>
-            <IconButton sx={{ color: "#0F172A" }}>
-              <Add />
+          </Tooltip>
+          <Tooltip title="Add New Booking">
+            <IconButton sx={{ color: "#0F172A" }} size="small" ml={1}>
+              <Add fontSize="inherit" />
             </IconButton>
-          </Box>
+          </Tooltip>
         </Box>
+      </Box>
 
-        <Typography variant="h4" gutterBottom sx={{ color: "#0F172A" }}>
+      {/* Header and Actions */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h4" sx={{ color: "#0F172A", fontWeight: 600 }}>
           All Bookings
         </Typography>
-
-        <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
-          <TableContainer
-            component={Paper}
-            sx={{ height: "100%", overflow: "auto" }}
-          >
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                    Serial No
-                  </TableCell>
-                  {[
-                    "employeeName",
-                    "expId",
-                    "seatNumber",
-                    "office",
-                    "dateOfBooking",
-                    "loginStatus",
-                    "status",
-                  ].map((column) => (
-                    <TableCell
-                      key={column}
-                      sx={{ padding: "6px 16px", lineHeight: 1.2 }}
-                    >
-                      <TableSortLabel
-                        active={orderBy === column}
-                        direction={orderBy === column ? order : "asc"}
-                        onClick={(event) => handleRequestSort(event, column as keyof Booking)}
-                        sx={{ lineHeight: 1, maxWidth: 95 }}
-                        data-column={column}
-                      >
-                        {column
-                          .replace(/([A-Z])/g, " $1")
-                          .replace(/^./, (str) => str.toUpperCase())}
-                        <IconButton
-                          size="small"
-                          onClick={handleFilterClick}
-                        >
-                          <ArrowDropDown />
-                        </IconButton>
-                      </TableSortLabel>
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {sortedBookings
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((booking, index) => (
-                    <TableRow
-                      key={index}
-                      onClick={() => handleRowClick(booking)}
-                    >
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {page * rowsPerPage + index + 1}
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.employeeName}
-                        <br />
-                        <span style={{ color: "#777", fontSize: "0.875rem" }}>
-                          DU-6
-                        </span>
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.expId}
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.seatNumber}
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.office}
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.dateOfBooking}
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.loginStatus ? "Yes" : "No"}
-                      </TableCell>
-                      <TableCell sx={{ padding: "6px 16px", lineHeight: 1.2 }}>
-                        {booking.status}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+        <Box display="flex" alignItems="center">
+          <Tooltip title="Filter">
+            <IconButton
+              sx={{ color: "#0F172A" }}
+              onClick={handleFilterClick}
+              size="small"
+            >
+              <FilterAlt fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Select Date Range">
+            <IconButton
+              sx={{ color: "#0F172A", ml: 1 }}
+              onClick={handleDatePickerClick}
+              size="small"
+            >
+              <CalendarToday fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
         </Box>
-
-        <TablePagination
-          rowsPerPageOptions={[10, 20]}
-          component="div"
-          count={sortedBookings.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-
-        <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleFilterClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-        >
-          <Box p={2}>
-            <TextField
-              label={`Filter by ${currentColumn}`}
-              variant="outlined"
-              fullWidth
-              value={filters[currentColumn as keyof Booking]}
-              onChange={handleFilterChange}
-            />
-          </Box>
-        </Popover>
       </Box>
+
+      {/* Table */}
+      <TableContainer component={Paper} sx={{ borderRadius: "8px", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "employeeName"}
+                  direction={orderBy === "employeeName" ? order : "asc"}
+                  onClick={(event) => handleRequestSort(event, "employeeName")}
+                >
+                  Employee Name
+                  {orderBy === "employeeName" ? (
+                    order === "asc" ? (
+                      <ArrowDropUp />
+                    ) : (
+                      <ArrowDropDown />
+                    )
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "expId"}
+                  direction={orderBy === "expId" ? order : "asc"}
+                  onClick={(event) => handleRequestSort(event, "expId")}
+                >
+                  Employee ID
+                  {orderBy === "expId" ? (
+                    order === "asc" ? (
+                      <ArrowDropUp />
+                    ) : (
+                      <ArrowDropDown />
+                    )
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>Booked Seat</TableCell>
+              <TableCell>Office</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Login Status</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sortedBookings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((booking) => (
+              <TableRow
+                hover
+                key={booking.id}
+                onClick={() => handleRowClick(booking)}
+              >
+                <TableCell>{booking.employeeName}</TableCell>
+                <TableCell>{booking.expId}</TableCell>
+                <TableCell>{booking.seatNumber}</TableCell>
+                <TableCell>{booking.office}</TableCell>
+                <TableCell>{new Date(booking.dateOfBooking).toLocaleDateString()}</TableCell>
+                <TableCell>{getLoginStatusIcon(booking.loginStatus)}</TableCell>
+                <TableCell>{getStatusIcon(booking.status)}</TableCell>
+                <TableCell>
+                  <IconButton onClick={() => navigate(`/edit-booking/${booking.id}`)}>
+                    <Edit />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Pagination */}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredBookings.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+        sx={{ mt: 2 }}
+      />
+
+      {/* Filter Popover */}
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleFilterClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <Box p={2}>
+          <Typography variant="h6" mb={2}>Filter by {currentColumn}</Typography>
+          <TextField
+            fullWidth
+            label={`Filter by ${currentColumn}`}
+            variant="outlined"
+            value={filters[currentColumn as keyof Booking] || ""}
+            onChange={handleFilterChange}
+          />
+        </Box>
+      </Popover>
+
+      {/* Date Picker Popover */}
+      <Popover
+        id={datePickerId}
+        open={datePickerOpen}
+        anchorEl={datePickerAnchorEl}
+        onClose={handleDatePickerClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <Box p={2}>
+          <Typography variant="h6" mb={2}>Select Date Range</Typography>
+          <DatePicker
+            label="Start Date"
+            value={dateRange[0]}
+            onChange={(date) => handleDateRangeChange(0, date)}
+            renderInput={(params) => <TextField {...params} fullWidth />}
+          />
+          <DatePicker
+            label="End Date"
+            value={dateRange[1]}
+            onChange={(date) => handleDateRangeChange(1, date)}
+            renderInput={(params) => <TextField {...params} fullWidth />}
+          />
+        </Box>
+      </Popover>
     </Box>
   );
 };
