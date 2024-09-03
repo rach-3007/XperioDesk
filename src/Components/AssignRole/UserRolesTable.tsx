@@ -24,7 +24,12 @@ const UserRolesTable: React.FC<UserRolesTableProps> = ({ searchTerm }) => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await axiosInstance.get('/api/users-with-roles');
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await axiosInstance.get('/api/users-with-roles', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Include the access token
+            'Content-Type': 'application/json', // Optional: specify content type
+          },});
         setRoles(response.data);
         setFilteredRoles(response.data); // Initialize with all users
       } catch (error) {
