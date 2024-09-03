@@ -59,7 +59,7 @@ const Controls = styled(Box)({
 });
 
 // Seat Component
-const Seat = ({style }) => {
+const Seat = ({style,onClick }) => {
   const [rotate, setRotate] = useState(0);
 
   const handleRotate = (e) => {
@@ -81,7 +81,7 @@ const Seat = ({style }) => {
 
   return (
     <Draggable>
-      <div style={style}>
+      <div style={style}  onClick={onClick}>
         <SeatContainer rotate={rotate}>
           <Backrest />
           <SeatArea />

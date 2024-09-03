@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { Seat, Cabin, ConferenceRoom, Partition, EntryPoint } from '../ManageLayout/OfficeElements';
-
+import BookingModal from './BookingModal'; // Import BookingModal component
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 const BookDesk = () => {
   const [layout, setLayout] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedSeat, setSelectedSeat] = useState(null); // State to manage selected seat
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+
 
   // Fetch layout from the backend
   useEffect(() => {
     const fetchLayout = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/layouts/62/entities');
+        const response = await fetch('http://127.0.0.1:8000/api/layouts/16/entities');
         if (!response.ok) {
           throw new Error('Failed to fetch layout data');
         }
         const data = await response.json();
-        console.log('Fetched layout data:', data); // Add this line
+        console.log('Fetched layout data:', data);
         setLayout(data.layout);
       } catch (error) {
         setError(error.message);
@@ -24,6 +29,13 @@ const BookDesk = () => {
     fetchLayout();
   }, []);
   
+  // Function to handle seat click
+  const handleSeatClick = (seat) => {
+    console.log('Seat clicked:', seat); 
+    setSelectedSeat(seat); // Set selected seat
+    setIsModalOpen(true);  // Open the modal
+  };
+
   const renderEntity = (entity) => {
     console.log('Entity Data:', entity);
     const { type, rotation } = entity;
@@ -38,8 +50,9 @@ const BookDesk = () => {
         transform: `rotate(${rotation}deg)`,
       },
       draggable: false,
+      onClick: () => handleSeatClick(entity), // Add onClick to handle seat click
     };
-    console.log(commonProps);
+
     switch (type.toLowerCase()) {
       case 'seat':
         return <Seat key={entity.id} {...commonProps}/>;
@@ -55,7 +68,6 @@ const BookDesk = () => {
         return null;
     }
   };
-  
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -64,6 +76,13 @@ const BookDesk = () => {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {layout ? layout.original.layout_entities.map((entity) => renderEntity(entity)) : <p>Loading...</p>}
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <BookingModal 
+        open={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        seat={selectedSeat} // Pass selected seat to BookingModal
+      />
+      </LocalizationProvider>
     </div>
   );
 };
