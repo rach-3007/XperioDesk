@@ -10,6 +10,7 @@ const ManageLayout: React.FC = () => {
   const [moduleID, setModuleID] = useState('');
   const [seatNumbers, setSeatNumbers] = useState('');
   const [accessDUs, setAccessDUs] = useState('');
+  
 
   // Function to handle when dragging stops
   const handleDragStop = (e, data, index) => {
@@ -87,7 +88,13 @@ const ManageLayout: React.FC = () => {
     };
     console.log('Request Data:', requestData);
     try {
-      const response = await axiosInstance.post('/api/layouts', requestData);
+      const accessToken = localStorage.getItem("accessToken");
+      const response = await axiosInstance.post('/api/layouts', requestData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token
+          'Content-Type': 'application/json', // Optional: specify content type
+        },
+      });
       if (response.status === 201) {
         alert('Layout created successfully!');
       } else {

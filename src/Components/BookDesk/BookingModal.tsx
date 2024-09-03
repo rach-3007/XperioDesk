@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-
+ 
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
@@ -23,14 +23,14 @@ interface BookingModalProps {
     name: string;
   } | null;
 }
-
+ 
 const Transition = React.forwardRef(function Transition(
   props: any,
   ref: React.Ref<unknown>
 ) {
   return <Slide direction="left" ref={ref} {...props} />;
 });
-
+ 
 const RightSideBox = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: 0,
@@ -40,31 +40,38 @@ const RightSideBox = styled(Box)(({ theme }) => ({
   backgroundColor: "#F5F6FF",
   boxShadow: theme.shadows[5],
 }));
-
+ 
 interface User {
   id: number;
   name: string;
 }
-
+ 
 const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(dayjs());
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
+ 
   useEffect(() => {
     if (seat) {
       console.log("Selected Seat ID:", seat.id);
     }
   }, [seat]);
-
+ 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/admin/users");
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await fetch("http://127.0.0.1:8000/api/admin/users", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Include the access token
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response.json();
-
+ 
         if (
           Array.isArray(data.data) &&
           data.data.every((item) => {
@@ -81,28 +88,31 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
         setUsers([]);
       }
     };
-
+ 
     fetchUsers();
   }, []);
-
+ 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-
+ 
   const handleBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+ 
     if (!selectedUser || !seat || !selectedDate || !selectedEndDate) {
       console.error("Missing required booking data");
+      alert("Missing required booking data");
       return;
     }
-
+ 
     try {
+      const accessToken = localStorage.getItem("accessToken");
       const response = await fetch(
         "http://127.0.0.1:8000/api/admin/assign-seat",
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -114,34 +124,41 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
           }),
         }
       );
-
+ 
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Booking successful:", bookingData);
+        alert("Booking Succesfull");
         onClose();
       } else {
         const errorData = await response.json();
         console.error("Booking failed:", errorData);
+        alert("Booking failed")
       }
     } catch (error) {
       console.error("Error during booking:", error);
+      alert("Error during booking");
     }
   };
-
+ 
   const handlePermanentBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+ 
     if (!selectedUser || !seat) {
       console.error("Missing required booking data");
+      alert("Missing required booking data");
       return;
     }
-
+ 
     try {
+      const accessToken = localStorage.getItem("accessToken");
       const response = await fetch(
         "http://127.0.0.1:8000/api/assign-permanent-seat",
         {
+          
           method: "POST",
           headers: {
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -151,20 +168,23 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
           }),
         }
       );
-
+ 
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Permanent Booking successful:", bookingData);
+        alert("Permanent Booking Successful");
         onClose();
       } else {
         const errorData = await response.json();
         console.error("Permanent Booking failed:", errorData);
+        alert(errorData.message);
       }
     } catch (error) {
       console.error("Error during permanent booking:", error);
+      alert("Error during Permanent Booking");
     }
   };
-
+ 
   return (
     <Dialog
       open={open}
@@ -384,5 +404,5 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
     </Dialog>
   );
 };
-
+ 
 export default BookingModal;

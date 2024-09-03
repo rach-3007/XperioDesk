@@ -59,13 +59,13 @@ const Controls = styled(Box)({
 });
 
 // Seat Component
-const Seat = ({style,onClick }) => {
+const Seat = ({style,backrestStyle, seatAreaStyle, onClick }) => {
   const [rotate, setRotate] = useState(0);
 
-  const handleRotate = (e) => {
-    e.stopPropagation(); // Prevents the click event from propagating to the seat container
-    setRotate((prevRotate) => (prevRotate + 15) % 360); // Rotate in 90-degree increments
-  };
+  // const handleRotate = (e) => {
+  //   e.stopPropagation(); // Prevents the click event from propagating to the seat container
+  //   setRotate((prevRotate) => (prevRotate + 15) % 360); // Rotate in 90-degree increments
+  // };
   // const SeatContent = (
   //   <SeatContainer style={style} rotate={rotate}>
   //     <Backrest />
@@ -81,19 +81,16 @@ const Seat = ({style,onClick }) => {
 
   return (
     <Draggable>
-      <div style={style}  onClick={onClick}>
+      <div style={style} onClick={onClick}>
         <SeatContainer rotate={rotate}>
-          <Backrest />
-          <SeatArea />
+          <Backrest style={backrestStyle} />
+          <SeatArea style={seatAreaStyle} />
           <Controls>
-            <RotateRightIcon
+            {/* <RotateRightIcon
               onClick={handleRotate}
               style={{ cursor: 'pointer', color: '#000000' }}
-            />
-            {/* <DeleteIcon
-              onClick={onDelete}
-              style={{ cursor: 'pointer', color: '#FF6347' }}
             /> */}
+           
           </Controls>
         </SeatContainer>
       </div>
