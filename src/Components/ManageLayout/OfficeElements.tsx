@@ -1,9 +1,10 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState } from 'react';
 import Draggable from 'react-draggable';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+
 
 // import DeleteIcon from '@mui/icons-material/Delete';
 import RotateRightIcon from '@mui/icons-material/RotateRight';
@@ -59,13 +60,13 @@ const Controls = styled(Box)({
 });
 
 // Seat Component
-const Seat = ({style }) => {
+const Seat = ({style,backrestStyle, seatAreaStyle, onClick }) => {
   const [rotate, setRotate] = useState(0);
 
-  const handleRotate = (e) => {
-    e.stopPropagation(); // Prevents the click event from propagating to the seat container
-    setRotate((prevRotate) => (prevRotate + 15) % 360); // Rotate in 90-degree increments
-  };
+  // const handleRotate = (e) => {
+  //   e.stopPropagation(); // Prevents the click event from propagating to the seat container
+  //   setRotate((prevRotate) => (prevRotate + 15) % 360); // Rotate in 90-degree increments
+  // };
   // const SeatContent = (
   //   <SeatContainer style={style} rotate={rotate}>
   //     <Backrest />
@@ -81,19 +82,16 @@ const Seat = ({style }) => {
 
   return (
     <Draggable>
-      <div style={style}>
+      <div style={style} onClick={onClick}>
         <SeatContainer rotate={rotate}>
-          <Backrest />
-          <SeatArea />
+          <Backrest style={backrestStyle} />
+          <SeatArea style={seatAreaStyle} />
           <Controls>
-            <RotateRightIcon
+            {/* <RotateRightIcon
               onClick={handleRotate}
               style={{ cursor: 'pointer', color: '#000000' }}
-            />
-            {/* <DeleteIcon
-              onClick={onDelete}
-              style={{ cursor: 'pointer', color: '#FF6347' }}
             /> */}
+           
           </Controls>
         </SeatContainer>
       </div>
@@ -102,7 +100,17 @@ const Seat = ({style }) => {
 };
 
 // Rectangle Background
-const RectangleBackground = styled(Box)({
+const RectangleBackgroundConf = styled(Box)({
+  position: 'relative',
+  height: '150px', // Height for the background
+  width: '100px', // Width for the background
+  borderRadius: '4px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  margin: '4px',
+});
+const RectangleBackgroundCab = styled(Box)({
   position: 'relative',
   height: '100px', // Height for the background
   width: '100px', // Width for the background
@@ -114,7 +122,7 @@ const RectangleBackground = styled(Box)({
 });
 
 // Cabin Component
-const Cabin = styled(RectangleBackground)({
+const Cabin = styled(RectangleBackgroundCab)({
   backgroundColor: '#2D3748', // Background color for Cabin
 });
 
@@ -125,7 +133,7 @@ const CabinIcon = styled(LocationOnIcon)({
 });
 
 // Conference Room Component
-const ConferenceRoom = styled(RectangleBackground)({
+const ConferenceRoom = styled(RectangleBackgroundConf)({
   backgroundColor: '#4A5568', // Background color for Conference Room
 });
 
@@ -139,7 +147,7 @@ const ConferenceRoomIcon = styled(LocationOnIcon)({
 const Partition = styled(Box)({
   backgroundColor: '#2C5282',
   height: '5px',
-  width: '200px',
+  width: '170px',
   borderRadius: '4px',
   display: 'flex',
   justifyContent: 'center',
@@ -180,7 +188,7 @@ const CabinComponent = ({style}) => (
   <Draggable>
     <div style={style}>
     <Cabin>
-      <CabinIcon />
+    <Typography sx={{fontColor:'white'}}>Cabin</Typography>
     </Cabin>
     </div>
   </Draggable>
@@ -191,7 +199,7 @@ const ConferenceRoomComponent = ({style}) => (
   <Draggable>
     <div style={style}>
     <ConferenceRoom>
-      <ConferenceRoomIcon />
+      <Typography sx={{fontColor:'white'}}>Conference <br/> Room</Typography>
     </ConferenceRoom>
     </div>
   </Draggable>

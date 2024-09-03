@@ -8,23 +8,40 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { bookings } from "../../data";
+import axiosInstance from "../../Config/AxiosConfig"; // Adjust the import based on your project structure
 import styles from "./Login.module.css";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    const user = bookings.find((booking) => booking.emailId === email);
+  const handleLogin = async () => {
+    try {
+      // Call the backend API with email and password
+      const response = await axiosInstance.post("/api/login", {
+        email,
+        password,
+      });
 
-    if (user) {
-      localStorage.setItem("userRole", user.role);
-      localStorage.setItem("username", user.employeeName);
-      navigate("/home");
-    } else {
-      setError("Invalid email. Please try again.");
+      if (response.status === 200) {
+        const { access_token, user } = response.data;
+
+        // Store the required details in local storage
+        localStorage.setItem("accessToken", access_token);
+        localStorage.setItem("name", user.name);
+        localStorage.setItem("role_id", user.role_id.toString());
+        localStorage.setItem("du_id", user.du_id.toString());
+        localStorage.setItem("designation", user.designation);
+        // Navigate to the home page
+        navigate("/home");
+      } else {
+        setError("Invalid credentials. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred while logging in. Please try again.");
     }
   };
 
@@ -61,13 +78,14 @@ const Login: React.FC = () => {
               },
             }}
           />
-          {error && <Typography color="error">{error}</Typography>}
           <TextField
             fullWidth
             label="Password"
             type="password"
             variant="outlined"
             margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             sx={{
               mb: 2,
               "& label": { color: "black" },
@@ -77,6 +95,7 @@ const Login: React.FC = () => {
               },
             }}
           />
+          {error && <Typography color="error">{error}</Typography>}
           <FormControlLabel
             control={<Checkbox sx={{ color: "black" }} />}
             label="Remember Me"
