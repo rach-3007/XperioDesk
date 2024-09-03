@@ -17,6 +17,11 @@ import AssignRolePage from "./Pages/AssignRolePage";
 import BookDesk from "./Components/BookDesk/BookDesk";
 import ManageLayoutPage from "./Pages/ManageLayout/ManageLayoutPage";
 import Moduless from "./Components/Offices/Moduless";
+import EditLayout from "./Components/EditLayout/EditLayout";
+import UserBookDesk from "./Components/UserBookDesk/UserBookDesk";
+
+
+
 
 const AppContent = () => {
   const location = useLocation();
@@ -34,10 +39,11 @@ const AppContent = () => {
           {/* Route to the Dashboard Page */}
           <Route path="/home" element={<DashboardPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/reports" element={<UserBookDesk />} />
           {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
           <Route path="/assign-role" element={<AssignRolePage />} />
           <Route path="/book-desk" element={<BookDesk />} />
+          <Route path="/edit-layout" element={<EditLayout/>} />
           <Route path="/offices" element={<OfficesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/manage-layout" element={<ManageLayoutPage />} />

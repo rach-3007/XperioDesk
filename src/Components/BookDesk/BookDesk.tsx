@@ -21,7 +21,7 @@ const BookDesk = () => {
     const fetchLayout = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
-        const response = await fetch("http://127.0.0.1:8000/api/layouts/84/entities", {
+        const response = await fetch("http://127.0.0.1:8000/api/layouts/86/entities", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`, // Include the access token
@@ -53,8 +53,8 @@ const BookDesk = () => {
     console.log("Entity Data:", entity);
     const { type, rotation} = entity;
     const status = entity.seat?.status;
-    const xPosition = parseInt(entity["x_position"], 10) || 0;
-    const yPosition = parseInt(entity["y_position"], 10) || 0;
+    const xPosition = parseFloat(entity["x_position"]) || 0;
+    const yPosition = parseFloat(entity["y_position"]) || 0;
 
     const backrestStyle = {
       backgroundColor: status === 'booked' ? 'red' : status === 'permanently_booked' ? '#686D76' : 'green',
@@ -80,11 +80,12 @@ const BookDesk = () => {
         return <Seat key={entity.id} {...commonProps} backrestStyle={backrestStyle} seatAreaStyle={seatAreaStyle}/>;
       case "cabin":
         return <Cabin key={entity.id} {...commonProps} />;
-      case "conference_room":
+      case "conference":
         return <ConferenceRoom key={entity.id} {...commonProps} />;
       case "partition":
+        console.log(entity.id)
         return <Partition key={entity.id} {...commonProps} />;
-      case "entry_point":
+      case "entrance":
         return <EntryPoint key={entity.id} {...commonProps} />;
       default:
         return null;
