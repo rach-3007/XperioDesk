@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React, { useState } from "react";
 // import {
 //   Dialog,
@@ -235,6 +236,8 @@
 
 // export default BookingModal;
 
+=======
+>>>>>>> a4293540fb499591f5dcc70d97998fe0bd53cd9b
 import React, { useState } from "react";
 import {
   Dialog,
@@ -474,4 +477,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) =>
   );
 };
 
+<<<<<<< HEAD
 export default BookingModal;
+=======
+export default BookingModal;
+>>>>>>> a4293540fb499591f5dcc70d97998fe0bd53cd9b

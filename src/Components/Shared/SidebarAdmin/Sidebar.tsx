@@ -20,7 +20,11 @@ const Sidebar: React.FC = () => {
     // { text: 'Notifications', icon: <NotificationsIcon sx={{ color: 'gray' }} />, path: '/notifications' },
     { text: 'Assign Role', icon: <AssignmentIndIcon sx={{ color: 'gray' }} />, path: '/assign-role' },
     { text: 'Book Desk', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/book-desk' },
+<<<<<<< HEAD
     { text: 'Book Desk-User', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/userbook-desk' },
+=======
+    { text: 'Edit Layout', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/edit-layout' },
+>>>>>>> a4293540fb499591f5dcc70d97998fe0bd53cd9b
     { text: 'Offices', icon: <OfficeIcon sx={{ color: 'gray' }} />, path: '/offices' },
     { text: 'Settings', icon: <SettingsIcon sx={{ color: 'gray' }} />, path: '/settings' },
   ];
