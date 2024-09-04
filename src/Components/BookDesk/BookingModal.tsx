@@ -10,11 +10,13 @@ import {
   Slide,
   Typography,
   styled,
+  Snackbar,
+  Alert, // Import Alert for better styling of Snackbar messages
   Autocomplete,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
- 
+
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
@@ -23,14 +25,11 @@ interface BookingModalProps {
     name: string;
   } | null;
 }
- 
-const Transition = React.forwardRef(function Transition(
-  props: any,
-  ref: React.Ref<unknown>
-) {
+
+const Transition = React.forwardRef(function Transition(props: any, ref: React.Ref<unknown>) {
   return <Slide direction="left" ref={ref} {...props} />;
 });
- 
+
 const RightSideBox = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: 0,
@@ -40,25 +39,28 @@ const RightSideBox = styled(Box)(({ theme }) => ({
   backgroundColor: "#F5F6FF",
   boxShadow: theme.shadows[5],
 }));
- 
+
 interface User {
   id: number;
   name: string;
 }
- 
+
 const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(dayjs());
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
- 
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [showSnackbar, setShowSnackbar] = useState<boolean>(false); // State for showing the Snackbar
+
   useEffect(() => {
     if (seat) {
       console.log("Selected Seat ID:", seat.id);
     }
   }, [seat]);
- 
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -71,12 +73,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
           },
         });
         const data = await response.json();
- 
+
         if (
           Array.isArray(data.data) &&
-          data.data.every((item) => {
-            return typeof item.id === "number" && typeof item.name === "string";
-          })
+          data.data.every((item) => typeof item.id === "number" && typeof item.name === "string")
         ) {
           setUsers(data.data);
         } else {
@@ -88,103 +88,133 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
         setUsers([]);
       }
     };
- 
+
     fetchUsers();
   }, []);
- 
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
- 
+
   const handleBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
- 
+  
     if (!selectedUser || !seat || !selectedDate || !selectedEndDate) {
       console.error("Missing required booking data");
       alert("Missing required booking data");
       return;
     }
- 
+  
+    // Ensure selectedDate and selectedEndDate are Dayjs objects
+    const startDate = dayjs(selectedDate);
+    const endDate = dayjs(selectedEndDate);
+  
+    if (!startDate.isValid() || !endDate.isValid()) {
+      console.error("Invalid date format");
+      alert("Invalid date format");
+      return;
+    }
+  
     try {
       const accessToken = localStorage.getItem("accessToken");
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/admin/assign-seat",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            layout_entity_id: seat.id,
-            user_id: selectedUser.id,
-            start_date: selectedDate.format("YYYY-MM-DD"),
-            end_date: selectedEndDate.format("YYYY-MM-DD"),
-            booked_by: 1,
-          }),
-        }
-      );
- 
+      const response = await fetch("http://127.0.0.1:8000/api/admin/assign-seat", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          layout_entity_id: seat.id,
+          user_id: selectedUser.id,
+          start_date: startDate.format("YYYY-MM-DD"),
+          end_date: endDate.format("YYYY-MM-DD"),
+          booked_by: 1,
+        }),
+      });
+  
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Booking successful:", bookingData);
-        alert("Booking Succesfull");
+        setMessage("Booking successful!");
+        setError(null);
+        setShowSnackbar(true); // Show the Snackbar
         onClose();
       } else {
         const errorData = await response.json();
         console.error("Booking failed:", errorData);
-        alert("Booking failed")
+        setError(errorData.error || "Booking failed.");
+        setMessage(null);
+        setShowSnackbar(true); // Show the Snackbar
       }
     } catch (error) {
       console.error("Error during booking:", error);
-      alert("Error during booking");
+      setError("An error occurred while booking the seat.");
+      setMessage(null);
+      setShowSnackbar(true); // Show the Snackbar
     }
   };
- 
+  
+
   const handlePermanentBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
- 
+
     if (!selectedUser || !seat) {
       console.error("Missing required booking data");
-      alert("Missing required booking data");
+      setError("Missing required Booking data");
+      setMessage(null);
       return;
     }
- 
+
     try {
       const accessToken = localStorage.getItem("accessToken");
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/assign-permanent-seat",
-        {
-          
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            layout_entity_id: seat.id,
-            user_id: selectedUser.id,
-            booked_by: 1,
-          }),
-        }
-      );
- 
+      const response = await fetch("http://127.0.0.1:8000/api/assign-permanent-seat", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          layout_entity_id: seat.id,
+          user_id: selectedUser.id,
+          booked_by: 1,
+        }),
+      });
+
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Permanent Booking successful:", bookingData);
-        alert("Permanent Booking Successful");
+        setMessage("Permanent Booking successful!");
+        setError(null);
+        setShowSnackbar(true); // Show the Snackbar
         onClose();
       } else {
         const errorData = await response.json();
         console.error("Permanent Booking failed:", errorData);
-        alert(errorData.message);
+        setError(errorData.error || "Permanent Booking failed.");
+        setMessage(null);
+        setShowSnackbar(true); // Show the Snackbar
       }
     } catch (error) {
       console.error("Error during permanent booking:", error);
-      alert("Error during Permanent Booking");
+      setError("Error during permanent booking.");
+      setMessage(null);
+      setShowSnackbar(true); // Show the Snackbar
     }
   };
- 
+
+  useEffect(() => {
+    // Show Snackbar whenever there's a message or error
+    if (message || error) {
+      setShowSnackbar(true);
+    }
+  }, [message, error]);
+
+  const handleCloseSnackbar = () => {
+    setShowSnackbar(false);
+    setMessage(null);
+    setError(null);
+  };
+
   return (
     <Dialog
       open={open}
@@ -270,83 +300,39 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
                           setSelectedUser(newValue);
                         }}
                         renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Select User"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            sx={{ marginBottom: "16px" }}
-                          />
+                          <TextField {...params} label="Select User" required />
                         )}
+                        value={selectedUser}
                       />
                       <DatePicker
                         label="Start Date"
                         value={selectedDate}
-                        onChange={(newValue) =>
-                          setSelectedDate(newValue ? dayjs(newValue) : null)
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            fullWidth
-                            sx={{ marginBottom: "16px" }}
-                            required
-                          />
-                        )}
+                        onChange={(date) => setSelectedDate(date)}
+                        renderInput={(params) => <TextField {...params} required />}
                       />
-                      {activeTab === 0 && (
-                        <DatePicker
-                          label="End Date"
-                          value={selectedEndDate}
-                          onChange={(newValue) =>
-                            setSelectedEndDate(
-                              newValue ? dayjs(newValue) : null
-                            )
-                          }
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              fullWidth
-                              sx={{ marginBottom: "16px" }}
-                              required
-                            />
-                          )}
-                        />
-                      )}
-                      <Box sx={{ textAlign: "center" }}>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                          sx={{
-                            width: "200px",
-                            backgroundColor: "#04122E",
-                            "&:hover": {
-                              backgroundColor: "#0F0d21",
-                            },
-                          }}
-                        >
-                          Book Now
-                        </Button>
-                      </Box>
+                      <DatePicker
+                        label="End Date"
+                        value={selectedEndDate}
+                        onChange={(date) => setSelectedEndDate(date)}
+                        renderInput={(params) => <TextField {...params} required />}
+                      />
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#06236F",
+                          color: "white",
+                          fontSize: "10px",
+                          borderRadius: "0",
+                          "&:hover": {
+                            backgroundColor: "#c90d00",
+                          },
+                        }}
+                      >
+                        Book Seat
+                      </Button>
                     </Box>
                   </form>
-                )}
-                {activeTab === 1 && (
-                  <Box
-                    sx={{
-                      padding: "10px",
-                      backgroundColor: "#f9f9f9",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    <Typography variant="body1">
-                      Bulk Booking feature coming soon!
-                    </Typography>
-                  </Box>
                 )}
                 {activeTab === 2 && (
                   <form onSubmit={handlePermanentBookingSubmit}>
@@ -367,32 +353,25 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
                           setSelectedUser(newValue);
                         }}
                         renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Select User"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            sx={{ marginBottom: "16px" }}
-                          />
+                          <TextField {...params} label="Select User" required />
                         )}
+                        value={selectedUser}
                       />
-                      <Box sx={{ textAlign: "center" }}>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                          sx={{
-                            width: "200px",
-                            backgroundColor: "#04122E",
-                            "&:hover": {
-                              backgroundColor: "#0F0d21",
-                            },
-                          }}
-                        >
-                          Assign Permanent Seat
-                        </Button>
-                      </Box>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#06236F",
+                          color: "white",
+                          fontSize: "10px",
+                          borderRadius: "0",
+                          "&:hover": {
+                            backgroundColor: "#c90d00",
+                          },
+                        }}
+                      >
+                        Book Permanent Seat
+                      </Button>
                     </Box>
                   </form>
                 )}
@@ -401,8 +380,24 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
           </DialogContent>
         </Box>
       </RightSideBox>
+
+      {/* Snackbar for displaying messages */}
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={message ? "success" : "error"}
+          sx={{ width: "100%" }}
+        >
+          {message || error}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };
- 
+
 export default BookingModal;
