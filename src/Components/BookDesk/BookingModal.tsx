@@ -98,13 +98,23 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
 
   const handleBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+  
     if (!selectedUser || !seat || !selectedDate || !selectedEndDate) {
       console.error("Missing required booking data");
       alert("Missing required booking data");
       return;
     }
-
+  
+    // Ensure selectedDate and selectedEndDate are Dayjs objects
+    const startDate = dayjs(selectedDate);
+    const endDate = dayjs(selectedEndDate);
+  
+    if (!startDate.isValid() || !endDate.isValid()) {
+      console.error("Invalid date format");
+      alert("Invalid date format");
+      return;
+    }
+  
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await fetch("http://127.0.0.1:8000/api/admin/assign-seat", {
@@ -116,12 +126,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
         body: JSON.stringify({
           layout_entity_id: seat.id,
           user_id: selectedUser.id,
-          start_date: selectedDate.format("YYYY-MM-DD"),
-          end_date: selectedEndDate.format("YYYY-MM-DD"),
+          start_date: startDate.format("YYYY-MM-DD"),
+          end_date: endDate.format("YYYY-MM-DD"),
           booked_by: 1,
         }),
       });
-
+  
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Booking successful:", bookingData);
@@ -143,6 +153,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
       setShowSnackbar(true); // Show the Snackbar
     }
   };
+  
 
   const handlePermanentBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

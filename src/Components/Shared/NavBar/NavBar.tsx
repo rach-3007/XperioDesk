@@ -4,11 +4,11 @@ import { AccountCircle } from "@mui/icons-material";
 import styles from "./NavBar.module.css";
 
 const NavBar: React.FC = () => {
-  const username = localStorage.getItem("username") || "User";
-  const role = localStorage.getItem("userRole") || "user";
+  const username = localStorage.getItem("name") || "User";
+  const roleId = localStorage.getItem("role_id") || 1;
 
   const bookingsPath =
-    role === "admin" ? "/admin-view-all-bookings" : "/user-view-all-bookings";
+    roleId === "2" ? "/admin-view-all-bookings" : "/user-view-all-bookings";
 
   return (
     <header className={styles.navbar}>

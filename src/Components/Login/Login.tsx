@@ -24,18 +24,25 @@ const Login: React.FC = () => {
         email,
         password,
       });
-
+  
       if (response.status === 200) {
         const { access_token, user } = response.data;
-
+  
         // Store the required details in local storage
         localStorage.setItem("accessToken", access_token);
         localStorage.setItem("name", user.name);
         localStorage.setItem("role_id", user.role_id.toString());
         localStorage.setItem("du_id", user.du_id.toString());
         localStorage.setItem("designation", user.designation);
-        // Navigate to the home page
-        navigate("/home");
+  
+        // Redirect based on role_id
+        if (user.role_id === 1) {
+          navigate("/userbook-desk"); // Redirect to User's page
+        } else if (user.role_id === 2) {
+          navigate("/book-desk"); // Redirect to Admin's page
+        } else {
+          setError("Unknown role. Please contact support.");
+        }
       } else {
         setError("Invalid credentials. Please try again.");
       }

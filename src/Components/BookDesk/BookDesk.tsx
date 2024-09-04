@@ -9,12 +9,15 @@ import {
 import BookingModal from './BookingModal';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert for notifications
 
 const BookDesk = () => {
   const [layout, setLayout] = useState(null);
   const [error, setError] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null); // State to manage selected seat
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar visibility
+  const [bookedByUser, setBookedByUser] = useState("");
 
   // Fetch layout from the backend
   useEffect(() => {
@@ -42,15 +45,47 @@ const BookDesk = () => {
     fetchLayout();
   }, []);
 
-  // Function to handle seat click
-  const handleSeatClick = (seat) => {
-    console.log('Seat clicked:', seat);
-    setSelectedSeat(seat); // Set selected seat
-    setIsModalOpen(true);  // Open the modal
+  const fetchUserName = async (userId) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const response = await fetch(`http://127.0.0.1:8000/api/users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      const userData = await response.json();
+      setBookedByUser(userData.name); // Set the fetched user's name
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setBookedByUser("Unknown user"); // Handle errors gracefully
+    }
   };
 
+
+  const handleSeatClick = (seat) => {
+    console.log("Seat clicked:", seat);
+    const { status, booked_by_user_id } = seat.seat || {};
+
+    if (status === "booked" || status === "permanently_booked") {
+      // Fetch the user's name using booked_by_user_id
+      if (booked_by_user_id) {
+        fetchUserName(booked_by_user_id);
+      }
+      setSnackbarOpen(true);
+      setIsModalOpen(false); // Do not open the modal for booked seats
+    } else {
+      setSelectedSeat(seat); // Set selected seat
+      setIsModalOpen(true); // Open the modal for available seats
+      setBookedByUser(""); // Reset the booked user name
+    }
+  };
   const renderEntity = (entity) => {
-    console.log("Entity Data:", entity);
+    // console.log("Entity Data:", entity);
     const { type, rotation} = entity;
     const status = entity.seat?.status;
     const xPosition = parseFloat(entity["x_position"]) || 0;
@@ -74,7 +109,7 @@ const BookDesk = () => {
       draggable: false,
       onClick: () => handleSeatClick(entity),
     };
-    console.log(commonProps);
+    // console.log(commonProps);
     switch (type.toLowerCase()) {
       case "seat":
         return <Seat key={entity.id} {...commonProps} backrestStyle={backrestStyle} seatAreaStyle={seatAreaStyle}/>;
@@ -83,7 +118,7 @@ const BookDesk = () => {
       case "conference":
         return <ConferenceRoom key={entity.id} {...commonProps} />;
       case "partition":
-        console.log(entity.id)
+        // console.log(entity.id)
         return <Partition key={entity.id} {...commonProps} />;
       case "entrance":
         return <EntryPoint key={entity.id} {...commonProps} />;
@@ -110,8 +145,23 @@ const BookDesk = () => {
         seat={selectedSeat} // Pass selected seat to BookingModal
       />
       </LocalizationProvider>
+      {/* Snackbar to show the name of the user who booked the seat */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
+          This seat is booked by {bookedByUser}.
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
+  
 
 export default BookDesk;
