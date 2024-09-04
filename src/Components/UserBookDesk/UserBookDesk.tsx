@@ -9,13 +9,15 @@ import {
 import BookingModal from './BookingModal';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-
+ 
+ 
+ 
 const BookDesk = () => {
   const [layout, setLayout] = useState(null);
   const [error, setError] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null); // State to manage selected seat
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-
+ 
   // Fetch layout from the backend
   useEffect(() => {
     const fetchLayout = async () => {
@@ -38,32 +40,32 @@ const BookDesk = () => {
         setError(error.message);
       }
     };
-
+ 
     fetchLayout();
   }, []);
-
+ 
   // Function to handle seat click
   const handleSeatClick = (seat) => {
     console.log('Seat clicked:', seat);
     setSelectedSeat(seat); // Set selected seat
     setIsModalOpen(true);  // Open the modal
   };
-
+ 
   const renderEntity = (entity) => {
     console.log("Entity Data:", entity);
     const { type, rotation} = entity;
     const status = entity.seat?.status;
     const xPosition = parseFloat(entity["x_position"]) || 0;
     const yPosition = parseFloat(entity["y_position"]) || 0;
-
+ 
     const backrestStyle = {
       backgroundColor: status === 'booked' ? 'red' : status === 'permanently_booked' ? '#686D76' : 'green',
     };
-  
+ 
     const seatAreaStyle = {
       backgroundColor: status === 'booked' ? 'lightcoral' : status === 'permanently_booked' ? '#EEEEEE' : 'lightgreen',
     };
-
+ 
     const commonProps = {
       style: {
         position: "relative",
@@ -91,11 +93,11 @@ const BookDesk = () => {
         return null;
     }
   };
-
+ 
   if (error) {
     return <div>Error: {error}</div>;
   }
-
+ 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", marginTop:50 }}>
       {layout ? (
@@ -113,5 +115,5 @@ const BookDesk = () => {
     </div>
   );
 };
-
+ 
 export default BookDesk;

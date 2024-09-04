@@ -90,7 +90,7 @@ const BookDesk = () => {
     const status = entity.seat?.status;
     const xPosition = parseFloat(entity["x_position"]) || 0;
     const yPosition = parseFloat(entity["y_position"]) || 0;
-
+    
     const backrestStyle = {
       backgroundColor: status === 'booked' ? 'red' : status === 'permanently_booked' ? '#686D76' : 'green',
     };

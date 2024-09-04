@@ -7,50 +7,112 @@ import {
   Checkbox,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../Config/AxiosConfig"; // Adjust the import based on your project structure
 import styles from "./Login.module.css";
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "../../Config/authConfig";
+import { callMsGraph } from "../../Config/graph";
+import { AuthenticationResult } from "@azure/msal-browser";
+import { postLogin } from "./api/postLogin";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const {instance}=useMsal();
   const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      // Call the backend API with email and password
-      const response = await axiosInstance.post("/api/login", {
-        email,
-        password,
-      });
+  // const handleLoginRedirect = () => {
+  //   instance
+  //     .loginRedirect({
+  //       ...loginRequest,
+  //       prompt: "create",
+  //     })
+  //     .catch((error) => console.log(error));
+  // };
+  const login = async (responce: AuthenticationResult): Promise<any> => {
+    localStorage.clear();
+    const response: any = await postLogin(responce.accessToken);
+    console.log("response", response);
+
+    if (!(response instanceof AxiosError)) {
+        console.log("Logged User Details", response.user.data);
+
+        // Store user details in local storage
+        localStorage.setItem("accessToken", response.access_token);
+        localStorage.setItem("roleId", response.XpeUser.role_id);
+        localStorage.setItem("name", JSON.stringify(response.user.data.givenName));
+
+        
+        if (response.XpeUser.role_id === 1) {
+            
+            navigate("/userbook-desk");
+        } else if (response.XpeUser.role_id === 2) {
+         
+            navigate("/book-desk");
+        } else {
+          
+            navigate("/");
+        }
+    } else {
+        alert("Error");
+    }
+
+    return response;
+};
+
+  const handleLoginRedirect = async() =>{
+      try {
+          const response = await instance.loginPopup(loginRequest);
+          console.log(response.accessToken);
+          const newGraph = await callMsGraph(response.accessToken);
+          console.log(newGraph);
+          console.log(newGraph.userPrincipalName);
+          await login(response); //
+      } catch (e) {
+          console.log("error");
+          console.error(e);
+      }
+  }
+
+  // const handleLogin = async () => {
+  //   try {
+  //     // Call the backend API with email and password
+  //     const response = await axiosInstance.post("/api/login", {
+  //       email,
+  //       password,
+  //     });
   
-      if (response.status === 200) {
-        const { access_token, user } = response.data;
+  //     if (response.status === 200) {
+  //       const { access_token, user } = response.data;
   
         // Store the required details in local storage
-        localStorage.setItem("accessToken", access_token);
-        localStorage.setItem("name", user.name);
-        localStorage.setItem("role_id", user.role_id.toString());
-        localStorage.setItem("du_id", user.du_id.toString());
-        localStorage.setItem("designation", user.designation);
+        // localStorage.setItem("accessToken", access_token);
+        // localStorage.setItem("name", user.name);
+        // localStorage.setItem("role_id", user.role_id.toString());
+        // localStorage.setItem("du_id", user.du_id.toString());
+        // localStorage.setItem("designation", user.designation);
   
-        // Redirect based on role_id
-        if (user.role_id === 1) {
-          navigate("/userbook-desk"); // Redirect to User's page
-        } else if (user.role_id === 2) {
-          navigate("/book-desk"); // Redirect to Admin's page
-        } else {
-          setError("Unknown role. Please contact support.");
-        }
-      } else {
-        setError("Invalid credentials. Please try again.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("An error occurred while logging in. Please try again.");
-    }
-  };
+  //       // Redirect based on role_id
+  //       if (user.role_id === 1) {
+  //         navigate("/userbook-desk"); // Redirect to User's page
+  //       } else if (user.role_id === 2) {
+  //         navigate("/book-desk"); // Redirect to Admin's page
+  //       } else {
+  //         setError("Unknown role. Please contact support.");
+  //       }
+  //     } else {
+  //       setError("Invalid credentials. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     setError("An error occurred while logging in. Please try again.");
+  //   }
+  // };
 
   return (
     <Box className={styles.container}>
@@ -111,7 +173,7 @@ const Login: React.FC = () => {
           <Button
             fullWidth
             variant="contained"
-            onClick={handleLogin}
+            onClick={handleLoginRedirect}
             sx={{
               mb: 2,
               backgroundColor: "#04122E",
@@ -121,7 +183,7 @@ const Login: React.FC = () => {
               },
             }}
           >
-            Login
+            Login with Microsoft
           </Button>
         </Box>
       </Box>

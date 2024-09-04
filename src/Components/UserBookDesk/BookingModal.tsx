@@ -10,20 +10,24 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-
+ 
 interface BookingModalProps {
-  open: boolean;
-  onClose: () => void;
-  seatId: number;
-}
-
+    open: boolean;
+    onClose: () => void;
+    seat: {
+      id: number;
+      name: string;
+    } | null;
+  }
+ 
+ 
 const Transition = React.forwardRef(function Transition(
   props: any,
   ref: React.Ref<unknown>
 ) {
   return <Slide direction="left" ref={ref} {...props} />;
 });
-
+ 
 const RightSideBox = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: 0,
@@ -33,66 +37,72 @@ const RightSideBox = styled(Box)(({ theme }) => ({
   backgroundColor: "#F5F6FF",
   boxShadow: theme.shadows[5],
 }));
-
-const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) => {
-    console.log("Seat ID:", seatId);
-
+ 
+const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
+  console.log("Seat ID:", seat);
+ 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-
+ 
   const handleBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+ 
     if (!selectedDate || !selectedEndDate) {
-      setError("Please select both start and end dates.");
-      return;
+        setError("Please select both start and end dates.");
+        return;
     }
-  
+ 
+    // Check if seat is null
+    if (!seat || !seat.id) {
+        setError("Seat information is not available.");
+        return;
+    }
+ 
     const startDate = dayjs(selectedDate).format("YYYY-MM-DD");
     const endDate = dayjs(selectedEndDate).format("YYYY-MM-DD");
-  
+ 
     console.log("Start Date:", startDate);
     console.log("End Date:", endDate);
-    console.log("Seat ID:", seatId.id); // Use seatId.id since seatId is an object
-
+    console.log("Seat ID:", seat.id);
+ 
     const payload = {
-        seat_id: seatId.id, // Use only the seat ID
-        start_date: startDate,
-      end_date: endDate,
+        layout_entity_id: seat.id, // Use seat.id here
+        start_date: startDate, // Should be a string
+        end_date: endDate, // Should be a string
     };
-  
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/user/book-seat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzI1Mjk4MTUwLCJleHAiOjE3MjUzMDE3NTAsIm5iZiI6MTcyNTI5ODE1MCwianRpIjoiREdtbGpVQ3JycEZhcFJmTiIsInN1YiI6IjY2IiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jmZKkWTnQwHcLMvxuUgXzQ_JQjqgIv85apTFlDPYyCY`, // Include the access token here
-          },
-        body: JSON.stringify(payload),
-      });
-  
-      if (response.ok) {
-        const bookingData = await response.json();
-        console.log("Booking successful:", bookingData);
-        setMessage("Booking successful!");
-        setError(null);
-        onClose();
-      } else {
-        const errorData = await response.json();
-        console.error("Booking failed:", errorData);
-        setError(errorData.error || "Booking failed.");
-        setMessage(null);
-      }
+ 
+    try {const accessToken = localStorage.getItem("accessToken");
+        const response = await fetch("http://127.0.0.1:8000/api/user/book-seat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(payload), // Ensure it's correctly serialized
+        });
+ 
+        if (response.ok) {
+            const bookingData = await response.json();
+            console.log("Booking successful:", bookingData);
+            setMessage("Booking successful!");
+            setError(null);
+            onClose();
+        } else {
+            const errorData = await response.json();
+            console.error("Booking failed:", errorData);
+            setError(errorData.message || "Booking failed.");
+            setMessage(null);
+        }
     } catch (error) {
-      console.error("Error during booking:", error);
-      setError("An error occurred while booking the seat.");
-      setMessage(null);
+        console.error("Error during booking:", error);
+        setError("An error occurred while booking the seat.");
+        setMessage(null);
     }
-  };
-  
-
+};
+ 
+ 
   return (
     <Dialog
       open={open}
@@ -127,7 +137,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) =>
                     Gayathri Building <br /> Phase 1 TechnoPark
                   </Typography>
                 </Box>
-
+ 
                 <Box
                   sx={{
                     padding: "10px",
@@ -172,7 +182,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) =>
                       />
                     </Box>
                   </Box>
-
+ 
                   {/* To Section */}
                   <Box
                     sx={{
@@ -207,7 +217,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) =>
                       />
                     </Box>
                   </Box>
-
+ 
                   <Button
                     type="submit"
                     variant="contained"
@@ -223,7 +233,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) =>
                   >
                     Confirm
                   </Button>
-
+ 
                   {/* Display error or success message */}
                   {error && <Typography color="error">{error}</Typography>}
                   {message && <Typography color="success">{message}</Typography>}
@@ -236,5 +246,6 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seatId }) =>
     </Dialog>
   );
 };
-
+ 
 export default BookingModal;
+ 
