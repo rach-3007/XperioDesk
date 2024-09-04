@@ -18,7 +18,7 @@ const BookDesk = () => {
     const fetchLayout = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
-        const response = await fetch("http://127.0.0.1:8000/api/layouts/86/entities", {
+        const response = await fetch("http://127.0.0.1:8000/api/layouts/1/entities", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`, // Include the access token

@@ -20,20 +20,27 @@ const Login: React.FC = () => {
   const handleLogin = async () => {
     try {
       // Call the backend API with email and password
-      const response = await axiosInstance.post("/api/login", {
-        email,
-        password,
-      });
+      const response = await axiosInstance.post("/api/login", { email, password });
+      console.log("API Response:", response.data);
+      
   
       if (response.status === 200) {
         const { access_token, user } = response.data;
   
-        // Store the required details in local storage
-        localStorage.setItem("accessToken", access_token);
-        localStorage.setItem("name", user.name);
-        localStorage.setItem("role_id", user.role_id.toString());
-        localStorage.setItem("du_id", user.du_id.toString());
-        localStorage.setItem("designation", user.designation);
+        if (!user || !user.role_id || !user.du_id) {
+          setError("Incomplete user data received from the server.");
+          return;
+        }
+  
+        if (user) {
+          localStorage.setItem("name", user.name || "");
+          localStorage.setItem("role_id", user.role_id ? user.role_id.toString() : "");
+          localStorage.setItem("du_id", user.du_id ? user.du_id.toString() : "");
+          localStorage.setItem("designation", user.designation || "");
+        } else {
+          setError("Invalid user data. Please try again.");
+        }
+        
   
         // Redirect based on role_id
         if (user.role_id === 1) {
@@ -46,11 +53,28 @@ const Login: React.FC = () => {
       } else {
         setError("Invalid credentials. Please try again.");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("An error occurred while logging in. Please try again.");
+    } catch (err) {
+      // Ensure we capture the error details properly
+      if (axios.isAxiosError(err)) {
+        console.error("Login error:", err);
+  
+        if (err.response) {
+          setError(
+            `Login failed: ${err.response.data?.error || err.response.statusText}`
+          );
+        } else if (err.request) {
+          setError("No response from the server. Please try again later.");
+        } else {
+          setError("An error occurred while logging in. Please try again.");
+        }
+      } else {
+        console.error("Unexpected error:", err);
+        setError("An unexpected error occurred. Please try again.");
+      }
     }
   };
+  
+  
 
   return (
     <Box className={styles.container}>
