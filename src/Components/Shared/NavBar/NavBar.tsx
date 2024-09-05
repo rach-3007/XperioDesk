@@ -5,19 +5,18 @@ import styles from "./NavBar.module.css";
 
 const NavBar: React.FC = () => {
   const username = localStorage.getItem('name') || "User";
-  const roleId = localStorage.getItem("role_id") || 1;
+ 
 
-  const bookingsPath =
-    roleId === "2" ? "/admin-view-all-bookings" : "/user-view-all-bookings";
+ 
 
   return (
     <header className={styles.navbar}>
       <span className={styles.logo}>XperioDesk</span>
       <div className={styles.navbarRight}>
-        <Link className={styles.navLink} to="/">
+        <Link className={styles.navLink} to="/userbook-desk">
           Home
         </Link>
-        <Link className={styles.navLink} to={bookingsPath}>
+        <Link className={styles.navLink} to="/user/bookings">
           My Bookings
         </Link>
         <div className={styles.profile}>

@@ -12,38 +12,72 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert for notifications
 
 const BookDesk = () => {
+  const [layouts, setLayouts] = useState([]);
   const [layout, setLayout] = useState(null);
+  const [selectedLayoutId, setSelectedLayoutId] = useState("");
   const [error, setError] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null); // State to manage selected seat
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar visibility
   const [bookedByUser, setBookedByUser] = useState("");
 
-  // Fetch layout from the backend
-  useEffect(() => {
-    const fetchLayout = async () => {
+   // Fetch available layouts when the component mounts
+   useEffect(() => {
+    const fetchAvailableLayouts = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
-        const response = await fetch("http://127.0.0.1:8000/api/layouts/86/entities", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`, // Include the access token
-        "Content-Type": "application/json",
-      },
-    });
+        const response = await fetch("http://127.0.0.1:8000/api/layouts", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch available layouts");
+        }
+        const data = await response.json();
+        console.log("Fetched layouts data:", data); // Log the fetched data
+        setLayouts(data || []);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+  
+    fetchAvailableLayouts();
+  }, []);
+
+
+  // Fetch layout entities based on the selected layout ID
+  useEffect(() => {
+    const fetchLayout = async () => {
+      if (!selectedLayoutId) return; // Exit if no layout is selected
+
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/layouts/${selectedLayoutId}/entities`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Include the access token
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch layout data");
         }
         const data = await response.json();
-        console.log("Fetched layout data:", data); // Add this line
-        setLayout(data.layout);
+        console.log("Fetched layout data:", data); // Log fetched layout data
+        setLayout(data.layout || null); // Ensure layout is properly set
       } catch (error) {
         setError(error.message);
       }
     };
 
     fetchLayout();
-  }, []);
+  }, [selectedLayoutId , isModalOpen]);
 
   const fetchUserName = async (userId) => {
     try {
@@ -84,19 +118,39 @@ const BookDesk = () => {
       setBookedByUser(""); // Reset the booked user name
     }
   };
+
+  const handleBookingSuccess = (updatedSeat) => {
+    // Update the seat status in the layout state
+    setLayout((prevLayout) => {
+      const updatedEntities = prevLayout.original.layout_entities.map((entity) =>
+        entity.id === updatedSeat.id ? { ...entity, seat: updatedSeat.seat } : entity
+      );
+      return {
+        ...prevLayout,
+        original: {
+          ...prevLayout.original,
+          layout_entities: updatedEntities,
+        },
+      };
+    });
+    setIsModalOpen(false); // Close the modal after booking
+  };
+
+
+
   const renderEntity = (entity) => {
     // console.log("Entity Data:", entity);
     const { type, rotation} = entity;
     const status = entity.seat?.status;
     const xPosition = parseFloat(entity["x_position"]) || 0;
     const yPosition = parseFloat(entity["y_position"]) || 0;
-    
+
     const backrestStyle = {
-      backgroundColor: status === 'booked' ? 'red' : status === 'permanently_booked' ? '#686D76' : 'green',
+      backgroundColor: status === 'booked' ? 'red' : status === 'permanently_booked' ? '#252423' : 'green',
     };
   
     const seatAreaStyle = {
-      backgroundColor: status === 'booked' ? 'lightcoral' : status === 'permanently_booked' ? '#EEEEEE' : 'lightgreen',
+      backgroundColor: status === 'booked' ? 'lightcoral' : status === 'permanently_booked' ? '#5c5956' : 'lightgreen',
     };
 
     const commonProps = {
@@ -130,20 +184,36 @@ const BookDesk = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div style={{position:"absolute",top:0,left:0,marginBottom: 20, width:100 , backgroundColor:"#202a44" }}>
+      <select
+        value={selectedLayoutId}
+        onChange={(e) => setSelectedLayoutId(e.target.value)}
+        style={{ padding: '8px', fontSize: '16px' }}
+      >
+        <option value="">Select a layout</option>
+        {layouts.map((layout) => (
+          <option key={layout.id} value={layout.id}>
+            {layout.id}.  {layout.layout_name}
+          </option>
+        ))}
+      </select>
+</div>
       {layout ? (
         layout.original.layout_entities.map((entity) => renderEntity(entity))
       ) : (
         <p>Loading...</p>
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <BookingModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        seat={selectedSeat} // Pass selected seat to BookingModal
-      />
+      <BookingModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          seat={selectedSeat} // Pass selected seat to BookingModal
+          onBookingSuccess={handleBookingSuccess} // Pass the booking success handler
+        />
       </LocalizationProvider>
       {/* Snackbar to show the name of the user who booked the seat */}
       <Snackbar

@@ -24,6 +24,7 @@ interface BookingModalProps {
     id: number;
     name: string;
   } | null;
+  onBookingSuccess: () => void;
 }
 
 const Transition = React.forwardRef(function Transition(props: any, ref: React.Ref<unknown>) {
@@ -45,7 +46,7 @@ interface User {
   name: string;
 }
 
-const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
+const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat ,onBookingSuccess }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(dayjs());
@@ -54,6 +55,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false); // State for showing the Snackbar
+
 
   useEffect(() => {
     if (seat) {
@@ -137,7 +139,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
         console.log("Booking successful:", bookingData);
         setMessage("Booking successful!");
         setError(null);
-        setShowSnackbar(true); // Show the Snackbar
+        setShowSnackbar(true); 
+
         onClose();
       } else {
         const errorData = await response.json();
@@ -183,10 +186,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
       if (response.ok) {
         const bookingData = await response.json();
         console.log("Permanent Booking successful:", bookingData);
+        onClose();
         setMessage("Permanent Booking successful!");
         setError(null);
         setShowSnackbar(true); // Show the Snackbar
-        onClose();
+
+       
       } else {
         const errorData = await response.json();
         console.error("Permanent Booking failed:", errorData);
@@ -216,7 +221,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
   };
 
   return (
-    <Dialog
+    <>
+     <Dialog
       open={open}
       onClose={onClose}
       TransitionComponent={Transition}
@@ -277,7 +283,6 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
                     }}
                   >
                     <Tab label="One-Time " />
-                    <Tab label="Bulk " />
                     <Tab label="Permanent " />
                   </Tabs>
                 </Box>
@@ -334,7 +339,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
                     </Box>
                   </form>
                 )}
-                {activeTab === 2 && (
+                {activeTab === 1 && (
                   <form onSubmit={handlePermanentBookingSubmit}>
                     <Box
                       sx={{
@@ -380,9 +385,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
           </DialogContent>
         </Box>
       </RightSideBox>
-
-      {/* Snackbar for displaying messages */}
-      <Snackbar
+    </Dialog>
+     {/* Snackbar for displaying messages */}
+    <Snackbar
         open={showSnackbar}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
@@ -396,7 +401,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
           {message || error}
         </Alert>
       </Snackbar>
-    </Dialog>
+    </>
+   
   );
 };
 

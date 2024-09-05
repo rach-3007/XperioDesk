@@ -16,6 +16,7 @@ import UserBookDesk from "./Components/UserBookDesk/UserBookDesk";
 import UserBookDeskPage from "./Pages/UserBookDeskPage";
 import NavBar from "./Components/Shared/NavBar/NavBar";
 import { Route, Routes } from "react-router-dom";
+import ReportsPage from "./Pages/ReportsPage";
 
 export const AppContent = () => {
   const roleId = parseInt(localStorage.getItem("roleId") || "0", 10); // Parse roleId as a number
@@ -30,7 +31,7 @@ export const AppContent = () => {
         {/* Route to the Dashboard Page */}
         <Route path="/" element={<BookDesk />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
-        <Route path="/reports" element={<UserBookDesk />} />
+        <Route path="/reports" element={<ReportsPage />} />
         {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
         <Route path="/assign-role" element={<AssignRolePage />} />
         <Route path="/book-desk" element={<BookDesk />} />

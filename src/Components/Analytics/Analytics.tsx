@@ -1,575 +1,184 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Box,
-//   Grid,
-//   Card,
-//   CardContent,
-//   Typography,
-//   FormControl,
-//   MenuItem,
-//   Select,
-// } from "@mui/material";
-// import BarChart from "./BarChart";
-// import DoughNut from "./DoughNut";
-// import PieChart from "./PieChart";
-// import SeatOccupancy from "./SeatOccupancy"; // Import SeatOccupancy component
-// import { ChartOptions as ChartJSOptions, ScriptableContext } from "chart.js";
-
-// import Navbar from "./Navbar";
-
-// const Analytics: React.FC = () => {
-//   const barChartData1 = {
-//     labels: [
-//       "JAN",
-//       "FEB",
-//       "MAR",
-//       "APR",
-//       "MAY",
-//       "JUN",
-//       "JUL",
-//       "AUG",
-//       "SEP",
-//       "OCT",
-//       "NOV",
-//       "DEC",
-//     ],
-//     datasets: [
-//       {
-//         label: "Dataset 1",
-//         data: [10, 20, 30, 40, 50, 90, 70, 80, 90, 100, 110, 120],
-//         backgroundColor: (context: ScriptableContext<"bar">) => {
-//           const ctx = context.chart.ctx;
-//           const gradient = ctx.createLinearGradient(
-//             0,
-//             0,
-//             0,
-//             context.chart.height
-//           );
-//           gradient.addColorStop(0, "#99A6B2"); // Lightened color at the top
-//           gradient.addColorStop(1, "#04122E"); // Dark color at the bottom
-//           return gradient;
-//         },
-//         borderColor: "white",
-//         borderWidth: 2,
-//         borderRadius: {
-//           topLeft: 30,
-//           topRight: 30,
-//           bottomLeft: 30,
-//           bottomRight: 30,
-//         },
-//         borderSkipped: false,
-//         barThickness: 12,
-//       },
-//     ],
-//   };
-
-//   const barChartOptions1: ChartJSOptions<"bar"> = {
-//     responsive: true,
-//     plugins: {
-//       legend: {
-//         display: false,
-//       },
-//       title: {
-//         display: false,
-//         text: "Sample Bar Chart",
-//       },
-//     },
-//     scales: {
-//       x: {
-//         grid: {
-//           display: false,
-//         },
-//         border: {
-//           display: false,
-//         },
-//       },
-//       y: {
-//         grid: {
-//           display: false, // Removes the grid lines on the y-axis
-//         },
-//         border: {
-//           display: false, // Removes the axis line on the y-axis
-//         },
-//       },
-//     },
-//   };
-
-//   const barChartData2 = {
-//     labels: [
-//       "JAN",
-//       "FEB",
-//       "MAR",
-//       "APR",
-//       "MAY",
-//       "JUN",
-//       "JUL",
-//       "AUG",
-//       "SEP",
-//       "OCT",
-//       "NOV",
-//       "DEC",
-//     ],
-//     datasets: [
-//       {
-//         label: "Dataset 1",
-//         data: [10, 20, 30, 40, 50, 90, 70, 80, 90, 100, 150, 120],
-//         backgroundColor: (context: ScriptableContext<"bar">) => {
-//           const ctx = context.chart.ctx;
-//           const gradient = ctx.createLinearGradient(
-//             0,
-//             0,
-//             0,
-//             context.chart.height
-//           );
-//           gradient.addColorStop(0, "#FFFFFF"); // Lightened color at the top
-//           gradient.addColorStop(1, "#04122E"); // Dark color at the bottom
-//           return gradient;
-//         },
-//         borderColor: "white",
-//         borderWidth: 2,
-//         borderRadius: {
-//           topLeft: 30,
-//           topRight: 30,
-//           bottomLeft: 30,
-//           bottomRight: 30,
-//         },
-//         borderSkipped: false,
-//         barThickness: 12,
-//       },
-//     ],
-//   };
-
-//   const barChartOptions2: ChartJSOptions<"bar"> = {
-//     responsive: true,
-//     plugins: {
-//       legend: {
-//         display: false,
-//       },
-//       title: {
-//         display: false,
-//         text: "Sample Bar Chart",
-//       },
-//     },
-//     scales: {
-//       x: {
-//         grid: {
-//           display: false,
-//         },
-//         border: {
-//           display: false,
-//         },
-//       },
-//       y: {
-//         grid: {
-//           display: false,
-//         },
-//         border: {
-//           display: false,
-//         },
-//       },
-//     },
-//   };
-
-//   const doughnutData1 = {
-//     labels: ["Booked Seats", "Available Seats"],
-//     datasets: [
-//       {
-//         data: [20, 100],
-//         backgroundColor: ["#FFA726", "#FFE0B2"],
-//         hoverBackgroundColor: ["#FB8C00", "#FFB74D"],
-//         borderWidth: 0,
-//       },
-//     ],
-//   };
-
-//   const doughnutOptions1: ChartJSOptions<"doughnut"> = {
-//     responsive: true,
-
-//     plugins: {
-//       legend: {
-//         display: true,
-//         position: "right",
-//         labels: {
-//           color: "#666",
-//           boxWidth: 10,
-//           padding: 20,
-//         },
-//       },
-
-//       tooltip: {
-//         callbacks: {
-//           label: function (context) {
-//             const label = context.label || "";
-//             const value = context.raw || "";
-//             return `${label}: ${value}%`;
-//           },
-//         },
-//       },
-//     },
-//     layout: {
-//       padding: {
-//         top: 0, // Adjust this value if you want to shift the entire chart content
-//         right: 0,
-//         bottom: 85,
-//         left: 0,
-//       },
-//     },
-//     cutout: "70%",
-//   };
-
-//   const doughnutData2 = {
-//     labels: ["Completed Tasks", "Pending Tasks"],
-//     datasets: [
-//       {
-//         data: [30, 70],
-//         backgroundColor: ["#66BB6A", "#C8E6C9"],
-//         hoverBackgroundColor: ["#4CAF50", "#A5D6A7"],
-//         borderWidth: 0,
-//       },
-//     ],
-//   };
-
-//   const doughnutOptions2: ChartJSOptions<"doughnut"> = {
-//     responsive: true,
-
-//     plugins: {
-//       legend: {
-//         display: true,
-//         position: "bottom",
-//         labels: {
-//           color: "#666",
-//           boxWidth: 20,
-//           padding: 20,
-//         },
-//       },
-//       tooltip: {
-//         callbacks: {
-//           label: function (context) {
-//             const label = context.label || "";
-//             const value = context.raw || "";
-//             return `${label}: ${value}%`;
-//           },
-//         },
-//       },
-//     },
-//     cutout: "70%",
-//   };
-//   // dropdown
-//   const [dropdownOptions, setDropdownOptions] = useState<string[]>([]);
-//   const [selectedOption, setSelectedOption] = useState<string>("");
-
-//   useEffect(() => {
-//     // Replace with your actual API call
-//     const fetchDropdownOptions = async () => {
-//       try {
-//         const response = await fetch("your_api_endpoint"); // Fetch data from your API
-//         const data = await response.json();
-//         setDropdownOptions(data.options); // Assuming your API response has an 'options' array
-//         setSelectedOption(data.options[0]); // Set the first option as the default selected option
-//       } catch (error) {
-//         console.error("Error fetching dropdown options:", error);
-//       }
-//     };
-
-//     fetchDropdownOptions();
-//   }, []);
-
-//   return (
-//     <Box sx={{ backgroundColor: "#F4F6F8" }}>
-//       <Box>
-//         <Navbar />
-//       </Box>
-
-//       <Box sx={{}}>
-//         <FormControl sx={{ minWidth: 100, mb: 5, mt: 2, ml: 3 }}>
-//           <Select
-//             value={selectedOption}
-//             onChange={(event) => setSelectedOption(event.target.value)}
-//             displayEmpty
-//             inputProps={{ "aria-label": "Without label" }}
-//           >
-//             <MenuItem value="">
-//               <em>Select an option</em>
-//             </MenuItem>
-//             <MenuItem value="Gayatri Building">Gayatri Building</MenuItem>{" "}
-//             {/* Existing option */}
-//             <MenuItem value="Tejaswini Building">
-//               Tejaswini Building
-//             </MenuItem>{" "}
-//             {/* New option */}
-//             {dropdownOptions.map((option) => (
-//               <MenuItem key={option} value={option}>
-//                 {option}
-//               </MenuItem>
-//             ))}
-//           </Select>
-//         </FormControl>
-//       </Box>
-//       <Box>
-//         <Grid container spacing={2}>
-//           {/* Row 1 */}
-
-//           <Grid
-//             container
-//             sx={{ display: "flex", justifyContent: "space-around" }}
-//           >
-//             <Grid item xs={12} md={6}>
-//               <Card sx={{ height: "100%", backgroundColor: "#F4F6F8" }}>
-//                 <CardContent sx={{ height: "100%", padding: 2 }}>
-//                   <Box
-//                     sx={{
-//                       height: "100%",
-//                       display: "flex",
-//                       flexDirection: "column",
-//                     }}
-//                   >
-//                     <Typography variant="h6" sx={{ paddingBottom: "16px" }}>
-//                       Bookings
-//                     </Typography>
-//                     <Box sx={{ flex: 1 }}>
-//                       <BarChart
-//                         data={barChartData1}
-//                         options={barChartOptions1}
-//                       />
-//                     </Box>
-//                   </Box>
-//                 </CardContent>
-//               </Card>
-//             </Grid>
-
-//             <Grid item xs={12} md={5}>
-//               <Card
-//                 sx={{
-//                   height: "100%",
-//                   border: "none",
-//                   boxShadow: "none",
-//                   backgroundColor: "#F4F6F8",
-//                 }}
-//               >
-//                 <CardContent sx={{ height: "100%", padding: 2 }}>
-//                   <Typography
-//                     variant="h6"
-//                     sx={{ paddingBottom: "16px", marginLeft: "35px" }}
-//                   >
-//                     Seat Occupancy
-//                   </Typography>
-//                   <SeatOccupancy />
-//                 </CardContent>
-//               </Card>
-//             </Grid>
-//           </Grid>
-
-//           {/* Row 2 */}
-//           <Grid
-//             container
-//             item
-//             xs={12}
-//             spacing={3}
-//             sx={{ mt: 1, display: "flex", justifyContent: "space-around" }}
-//           >
-//             <Grid item xs={12} md={5}>
-//               <Card sx={{ height: "80%", backgroundColor: "#F4F6F8" }}>
-//                 <CardContent
-//                   sx={{
-//                     height: "100%",
-//                     display: "flex",
-//                     alignItems: "center",
-//                     justifyContent: "center",
-//                     flexDirection: "column",
-//                   }}
-//                 >
-//                   <Typography variant="h6" align="left" sx={{ mt: 1, mr: 35 }}>
-//                     Du Occupancy
-//                   </Typography>
-//                   <Box sx={{ width: "100%", height: "100%" }}>
-//                     <PieChart />
-//                   </Box>
-//                 </CardContent>
-//               </Card>
-//             </Grid>
-
-//             <Grid item xs={12} md={5}>
-//               <Card sx={{ height: "80%", backgroundColor: "#F4F6F8" }}>
-//                 <CardContent>
-//                   <Typography variant="h6">Today's Booking</Typography>
-//                   <DoughNut data={doughnutData1} options={doughnutOptions1} />
-//                 </CardContent>
-//               </Card>
-//             </Grid>
-//           </Grid>
-
-//           {/* Row 3 */}
-//           <Grid container item xs={12} spacing={2} sx={{ mt: -12 }}>
-//             <Grid item xs={12} md={4}>
-//               <Card sx={{ height: "95%", backgroundColor: "#F4F6F8" }}>
-//                 <CardContent>
-//                   <Typography variant="h6">Today's Utilization rate</Typography>
-//                   <DoughNut data={doughnutData2} options={doughnutOptions2} />
-//                 </CardContent>
-//               </Card>
-//             </Grid>
-
-//             <Grid item xs={12} md={8}>
-//               <Card sx={{ height: "95%" }}>
-//                 <CardContent sx={{ height: "100%", padding: 2 }}>
-//                   <Box
-//                     sx={{
-//                       height: "90%",
-//                       display: "flex",
-//                       flexDirection: "column",
-//                     }}
-//                   >
-//                     <Box
-//                       sx={{
-//                         display: "flex",
-//                         justifyContent: "space-between",
-//                         alignItems: "center",
-//                       }}
-//                     >
-//                       <Typography variant="h6">Utilization rate</Typography>
-//                     </Box>
-//                     <Box sx={{ flex: 1 }}>
-//                       <BarChart
-//                         data={barChartData2}
-//                         options={barChartOptions2}
-//                       />
-//                     </Box>
-//                   </Box>
-//                 </CardContent>
-//               </Card>
-//             </Grid>
-//           </Grid>
-//         </Grid>
-//       </Box>
-//     </Box>
-//   );
-// };
-
-// export default Analytics;
-
-import React from 'react';
-import { Tabs, Tab, Box, AppBar, Toolbar, MenuItem, Select, Typography, Container } from '@mui/material';
-import { styled } from '@mui/system';
-
-interface AnalyticsProps {}
-
-const StyledAppBar = styled(AppBar)({
-    backgroundColor: '#FFFFFF', // Light background for the header
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for a modern look
-    borderBottom: '1px solid #E0E0E0',
-});
-
-const StyledToolbar = styled(Toolbar)({
-    minHeight: '64px', // Refined height for the header
-});
-
-const StyledTypography = styled(Typography)({
-    fontWeight: '600',
-    color: '#333333', // Dark text color for better readability
-    letterSpacing: '0.5px',
-});
-
-const StyledTab = styled(Tab)({
-    color: '#888888', // Light gray color for unselected tabs
-    fontWeight: '500',
-    '&.Mui-selected': {
-        color: '#333333', // Dark color for selected tab
-        fontWeight: '600',
-        borderBottom: '2px solid #E91E63', // Accent color underline
-    },
-    transition: 'color 0.3s ease, border-bottom 0.3s ease',
-    padding: '',
-    fontSize: '14px',
-});
-
-const StyledSelect = styled(Select)({
-    backgroundColor: '#FFFFFF', // Light background for select box
-    color: '#333333',
-    borderRadius: '4px',
-    '.MuiOutlinedInput-notchedOutline': {
-        borderColor: '#E0E0E0',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#E91E63',
-    },
-    '.MuiSvgIcon-root': {
-        color: '#333333',
-    },
-});
-
-const StyledBox = styled(Box)({
-    color: '#333333',
-    backgroundColor: '#F5F5F5', // Light background for content area
-    padding: '30px',
-    borderRadius: '12px',
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden', // Prevents overflow of content
-});
-
-const Analytics: React.FC<AnalyticsProps> = () => {
-    const [selectedTab, setSelectedTab] = React.useState<number>(0);
-    const [selectedLocation, setSelectedLocation] = React.useState<string>('Location 1');
-
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setSelectedTab(newValue);
-    };
-
-    const handleLocationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelectedLocation(event.target.value as string);
-    };
-
-    return (
-        <Box width="84.3vw" height="100vh" display="flex" flexDirection="column" bgcolor="#EAEAEA" overflow="hidden">
-            {/* Header */}
-            <StyledAppBar position="static">
-                <StyledToolbar>
-                    <StyledTypography variant="h6" component="div">
-                        Analytics Dashboard
-                    </StyledTypography>
-                </StyledToolbar>
-            </StyledAppBar>
-
-            {/* Content */}
-            <Container maxWidth="auto" sx={{ flexGrow: 1, py: 4, overflow: 'hidden' }}>
-                {/* Location Chooser */}
-                <Box mb={4}>
-                    <StyledSelect
-                        value={selectedLocation}
-                        onChange={handleLocationChange}
-                        displayEmpty
-                        
-                        variant="outlined"
-                    >
-                        <MenuItem value="Location 1">Location 1</MenuItem>
-                        <MenuItem value="Location 2">Location 2</MenuItem>
-                        <MenuItem value="Location 3">Location 3</MenuItem>
-                    </StyledSelect>
+import React from "react";
+import { useState,useEffect } from "react";
+import axios from "axios";
+import { Grid, Paper, Typography, Box, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import {
+  AccessTime,
+  EventAvailable,
+  People,
+  PieChart,
+  BarChart,
+} from "@mui/icons-material";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+ 
+const Analytics: React.FC = () => {
+  const [bookingCount, setBookingCount] = useState<number | null>(null);
+ 
+  useEffect(() => {
+    axios.get('/api/bookings/count')
+      .then(response => {
+        setBookingCount(response.data.data);
+      })
+      .catch(error => {
+        console.error('Error fetching booking count:', error);
+      });
+  }, []);
+  const overviewItems = [
+    { title: "All Bookings", value: bookingCount !== null ? bookingCount : "Loading...", icon: <EventAvailable fontSize="large" sx={{ color: '#3182CE' }} /> },
+    { title: "Available Seats", value: "230", icon: <People fontSize="large" sx={{ color: '#38A169' }} /> },
+    { title: "Average Desk Hours", value: "7 Hours", icon: <AccessTime fontSize="large" sx={{ color: '#DD6B20' }} /> },
+    { title: "Booking Rate", value: "75%", icon: <PieChart fontSize="large" sx={{ color: '#D69E2E' }} /> },
+    { title: "Booked Seats", value: "120", icon: <EventAvailable fontSize="large" sx={{ color: '#3182CE' }} /> },
+    { title: "Utilization Rate", value: "75%", icon: <BarChart fontSize="large" sx={{ color: '#E53E3E' }} /> },
+  ];
+ 
+  const Notif = [
+    { title: "Notifications", value: "0 Pending", icon: <ArrowRightAltIcon fontSize="large" sx={{ color: '#718096' }} /> },
+  ];
+ 
+  // Handle location change
+  const [location, setLocation] = React.useState<string>('Techno Park Phase I - Gayathri Building');
+ 
+  const handleLocationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setLocation(event.target.value as string);
+  };
+ 
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
+      <Box sx={{ mb: 4 }}>
+        {/* Header Section */}
+        <Typography variant="h3" sx={{ mb: 2, color: "#2D3748", fontWeight: 700 }}>
+          Dashboard & Analytics
+        </Typography>
+        {/* <Typography variant="h6" sx={{ mb: 2, color: "#2D3748", fontWeight: 500 }}>
+          Analytics
+        </Typography> */}
+       
+        {/* Location Dropdown */}
+        <FormControl fullWidth>
+          <InputLabel id="location-select-label">Location</InputLabel>
+          <Select
+            labelId="location-select-label"
+            id="location-select"
+            value={location}
+            onChange={handleLocationChange}
+            sx={{ mb: 3 }}
+          >
+            <MenuItem value="Techno Park Phase I - Gayathri Building">Techno Park Phase I - Gayathri Building</MenuItem>
+            <MenuItem value="Techno Park Phase I - Thejaswini Building">Techno Park Phase I - Thejaswini Building</MenuItem>
+            {/* Add more options here if needed */}
+          </Select>
+        </FormControl>
+      </Box>
+     
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: 'column', md: 'row' } }}>
+          <Grid container spacing={3} sx={{ flex: 1 }}>
+            {overviewItems.map((item, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    borderRadius: 2,
+                    height: '50%',
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+                    },
+                  }}
+                >
+                  <Box>
+                    <Typography sx={{ color: "#2D3748", fontSize: 14, fontWeight: 500 }}>
+                      {item.title}
+                    </Typography>
+                    <Typography sx={{ color: "#1A202C", fontSize: 24, fontWeight: 700 }}>
+                      {item.value}
+                    </Typography>
+                  </Box>
+                  {item.icon}
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+          <Box
+            sx={{
+              width: { xs: '100%', md: 320 },
+              ml: { xs: 0, md: 4 },
+              mt: { xs: 4, md: 0 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: '100%',
+            }}
+          >
+            {Notif.map((item, index) => (
+              <Paper
+                key={index}
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderRadius: 2,
+                  flexGrow: 1,
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+                  },
+                }}
+              >
+                <Box>
+                  <Typography sx={{ color: "#2D3748", fontSize: 18, fontWeight: 500, borderBottom: '2px solid #CBD5E0', pb: 1 }}>
+                    {item.title}
+                  </Typography>
+                  <Typography sx={{ color: "#1A202C", fontSize: 22, fontWeight: 700, mt: 1 }}>
+                    {item.value}
+                  </Typography>
                 </Box>
-
-                {/* Tabs */}
-                <Box mb={4}>
-                    <Tabs
-                        value={selectedTab}
-                        onChange={handleTabChange}
-                        variant="fullWidth"
-                        centered
-                        aria-label="Analytics Tabs"
-                    >
-                        <StyledTab label="Overview" />
-                        <StyledTab label="Booking Utilization" />
-                        <StyledTab label="Analytics" />
-                    </Tabs>
-                </Box>
-
-                {/* Tab Content */}
-                <StyledBox>
-                    {selectedTab === 0 && <Box>Overview Content</Box>}
-                    {selectedTab === 1 && <Box>Booking Utilization Content</Box>}
-                    {selectedTab === 2 && <Box>Analytics Content</Box>}
-                </StyledBox>
-            </Container>
+                {item.icon}
+              </Paper>
+            ))}
+          </Box>
         </Box>
-    );
+ 
+        {/* Attendance Log Card */}
+        <Box mt={4}>
+          <Paper
+            sx={{
+              p: 3,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderRadius: 2,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+              },
+            }}
+          >
+            <Box>
+              <Typography sx={{ color: "#2D3748", fontSize: 18, fontWeight: 500, borderBottom: '2px solid #CBD5E0', pb: 1 }}>
+                No Show Log
+              </Typography>
+              <Typography sx={{ color: "#1A202C", fontSize: 22, fontWeight: 700, mt: 1 }}>
+                View detailed log of Login records
+              </Typography>
+            </Box>
+            <ArrowRightAltIcon fontSize="large" sx={{ color: '#718096' }} />
+          </Paper>
+        </Box>
+      </Box>
+    </Box>
+  );
 };
-
+ 
 export default Analytics;

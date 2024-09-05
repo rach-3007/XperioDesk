@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,12 @@ import {
   Slide,
   Typography,
   styled,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
+
  
 interface BookingModalProps {
     open: boolean;
@@ -45,6 +48,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
   const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
  
   const handleBookingSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -88,22 +92,39 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
             console.log("Booking successful:", bookingData);
             setMessage("Booking successful!");
             setError(null);
+            setShowSnackbar(true); 
             onClose();
         } else {
             const errorData = await response.json();
             console.error("Booking failed:", errorData);
             setError(errorData.message || "Booking failed.");
             setMessage(null);
+            setShowSnackbar(true); 
         }
     } catch (error) {
         console.error("Error during booking:", error);
         setError("An error occurred while booking the seat.");
         setMessage(null);
+        setShowSnackbar(true);
     }
+};
+
+useEffect(() => {
+  // Show Snackbar whenever there's a message or error
+  if (message || error) {
+    setShowSnackbar(true);
+  }
+}, [message, error]);
+
+const handleCloseSnackbar = () => {
+  setShowSnackbar(false);
+  setMessage(null);
+  setError(null);
 };
  
  
   return (
+    <>
     <Dialog
       open={open}
       onClose={onClose}
@@ -244,6 +265,21 @@ const BookingModal: React.FC<BookingModalProps> = ({ open, onClose, seat }) => {
         </Box>
       </RightSideBox>
     </Dialog>
+    <Snackbar
+    open={showSnackbar}
+    autoHideDuration={6000}
+    onClose={handleCloseSnackbar}
+    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+  >
+    <Alert
+      onClose={handleCloseSnackbar}
+      severity={message ? "success" : "error"}
+      sx={{ width: "100%" }}
+    >
+      {message || error}
+    </Alert>
+  </Snackbar>
+  </>
   );
 };
  

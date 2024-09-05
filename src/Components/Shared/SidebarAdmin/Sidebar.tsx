@@ -16,14 +16,14 @@ const Sidebar: React.FC = () => {
   const {instance}=useMsal();
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon sx={{ color: 'gray' }} />, path: '/home' },
+    // { text: 'Dashboard', icon: <DashboardIcon sx={{ color: 'gray' }} />, path: '/home' },
     { text: 'Analytics', icon: <AnalyticsIcon sx={{ color: 'gray' }} />, path: '/analytics' },
     { text: 'Reports', icon: <ReportIcon sx={{ color: 'gray' }} />, path: '/reports' },
     // { text: 'Notifications', icon: <NotificationsIcon sx={{ color: 'gray' }} />, path: '/notifications' },
     { text: 'Assign Role', icon: <AssignmentIndIcon sx={{ color: 'gray' }} />, path: '/assign-role' },
     { text: 'Book Desk', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/book-desk' },
     
-    { text: 'Edit Layout', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/edit-layout' },
+    // { text: 'Edit Layout', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/edit-layout' },
     { text: 'Offices', icon: <OfficeIcon sx={{ color: 'gray' }} />, path: '/offices' },
     { text: 'Settings', icon: <SettingsIcon sx={{ color: 'gray' }} />, path: '/settings' },
     

@@ -61,8 +61,13 @@ const UserRolesTable: React.FC<UserRolesTableProps> = ({ searchTerm }) => {
 
     // Update the role in the backend
     try {
+      const accessToken = localStorage.getItem("accessToken");
       const user = updatedRoles[index];
-      await axiosInstance.put(`/api/users/${user.id}/update-role`, { role: newRoleName });
+      await axiosInstance.put(`/api/users/${user.id}/update-role`, { role: newRoleName }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token
+          'Content-Type': 'application/json', // Optional: specify content type
+        },});
       console.log('Role updated successfully');
     } catch (error) {
       console.error('Error updating role:', error);
