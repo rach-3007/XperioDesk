@@ -446,130 +446,316 @@
 // };
 
 // export default Analytics;
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// import React from 'react';
+// import { Tabs, Tab, Box, AppBar, Toolbar, MenuItem, Select, Typography, Container } from '@mui/material';
+// import { styled } from '@mui/system';
 
-import React from 'react';
-import { Tabs, Tab, Box, AppBar, Toolbar, MenuItem, Select, Typography, Container } from '@mui/material';
-import { styled } from '@mui/system';
+// interface AnalyticsProps {}
 
-interface AnalyticsProps {}
+// const StyledAppBar = styled(AppBar)({
+//     backgroundColor: '#FFFFFF', // Light background for the header
+//     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for a modern look
+//     borderBottom: '1px solid #E0E0E0',
+// });
 
-const StyledAppBar = styled(AppBar)({
-    backgroundColor: '#FFFFFF', // Light background for the header
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for a modern look
-    borderBottom: '1px solid #E0E0E0',
-});
+// const StyledToolbar = styled(Toolbar)({
+//     minHeight: '64px', // Refined height for the header
+// });
 
-const StyledToolbar = styled(Toolbar)({
-    minHeight: '64px', // Refined height for the header
-});
+// const StyledTypography = styled(Typography)({
+//     fontWeight: '600',
+//     color: '#333333', // Dark text color for better readability
+//     letterSpacing: '0.5px',
+// });
 
-const StyledTypography = styled(Typography)({
-    fontWeight: '600',
-    color: '#333333', // Dark text color for better readability
-    letterSpacing: '0.5px',
-});
+// const StyledTab = styled(Tab)({
+//     color: '#888888', // Light gray color for unselected tabs
+//     fontWeight: '500',
+//     '&.Mui-selected': {
+//         color: '#333333', // Dark color for selected tab
+//         fontWeight: '600',
+//         borderBottom: '2px solid #E91E63', // Accent color underline
+//     },
+//     transition: 'color 0.3s ease, border-bottom 0.3s ease',
+//     padding: '',
+//     fontSize: '14px',
+// });
 
-const StyledTab = styled(Tab)({
-    color: '#888888', // Light gray color for unselected tabs
-    fontWeight: '500',
-    '&.Mui-selected': {
-        color: '#333333', // Dark color for selected tab
-        fontWeight: '600',
-        borderBottom: '2px solid #E91E63', // Accent color underline
-    },
-    transition: 'color 0.3s ease, border-bottom 0.3s ease',
-    padding: '',
-    fontSize: '14px',
-});
+// const StyledSelect = styled(Select)({
+//     backgroundColor: '#FFFFFF', // Light background for select box
+//     color: '#333333',
+//     borderRadius: '4px',
+//     '.MuiOutlinedInput-notchedOutline': {
+//         borderColor: '#E0E0E0',
+//     },
+//     '&:hover .MuiOutlinedInput-notchedOutline': {
+//         borderColor: '#E91E63',
+//     },
+//     '.MuiSvgIcon-root': {
+//         color: '#333333',
+//     },
+// });
 
-const StyledSelect = styled(Select)({
-    backgroundColor: '#FFFFFF', // Light background for select box
-    color: '#333333',
-    borderRadius: '4px',
-    '.MuiOutlinedInput-notchedOutline': {
-        borderColor: '#E0E0E0',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#E91E63',
-    },
-    '.MuiSvgIcon-root': {
-        color: '#333333',
-    },
-});
+// const StyledBox = styled(Box)({
+//     color: '#333333',
+//     backgroundColor: '#F5F5F5', // Light background for content area
+//     padding: '30px',
+//     borderRadius: '12px',
+//     boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
+//     overflow: 'hidden', // Prevents overflow of content
+// });
 
-const StyledBox = styled(Box)({
-    color: '#333333',
-    backgroundColor: '#F5F5F5', // Light background for content area
-    padding: '30px',
-    borderRadius: '12px',
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden', // Prevents overflow of content
-});
+// const Analytics: React.FC<AnalyticsProps> = () => {
+//     const [selectedTab, setSelectedTab] = React.useState<number>(0);
+//     const [selectedLocation, setSelectedLocation] = React.useState<string>('Location 1');
 
-const Analytics: React.FC<AnalyticsProps> = () => {
-    const [selectedTab, setSelectedTab] = React.useState<number>(0);
-    const [selectedLocation, setSelectedLocation] = React.useState<string>('Location 1');
+//     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+//         setSelectedTab(newValue);
+//     };
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setSelectedTab(newValue);
-    };
+//     const handleLocationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+//         setSelectedLocation(event.target.value as string);
+//     };
 
-    const handleLocationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelectedLocation(event.target.value as string);
-    };
+//     return (
+//         <Box width="84.3vw" height="100vh" display="flex" flexDirection="column" bgcolor="#EAEAEA" overflow="hidden">
+//             {/* Header */}
+//             <StyledAppBar position="static">
+//                 <StyledToolbar>
+//                     <StyledTypography variant="h6" component="div">
+//                         Analytics Dashboard
+//                     </StyledTypography>
+//                 </StyledToolbar>
+//             </StyledAppBar>
 
-    return (
-        <Box width="84.3vw" height="100vh" display="flex" flexDirection="column" bgcolor="#EAEAEA" overflow="hidden">
-            {/* Header */}
-            <StyledAppBar position="static">
-                <StyledToolbar>
-                    <StyledTypography variant="h6" component="div">
-                        Analytics Dashboard
-                    </StyledTypography>
-                </StyledToolbar>
-            </StyledAppBar>
-
-            {/* Content */}
-            <Container maxWidth="auto" sx={{ flexGrow: 1, py: 4, overflow: 'hidden' }}>
-                {/* Location Chooser */}
-                <Box mb={4}>
-                    <StyledSelect
-                        value={selectedLocation}
-                        onChange={handleLocationChange}
-                        displayEmpty
+//             {/* Content */}
+//             <Container maxWidth="auto" sx={{ flexGrow: 1, py: 4, overflow: 'hidden' }}>
+//                 {/* Location Chooser */}
+//                 <Box mb={4}>
+//                     <StyledSelect
+//                         value={selectedLocation}
+//                         onChange={handleLocationChange}
+//                         displayEmpty
                         
-                        variant="outlined"
-                    >
-                        <MenuItem value="Location 1">Location 1</MenuItem>
-                        <MenuItem value="Location 2">Location 2</MenuItem>
-                        <MenuItem value="Location 3">Location 3</MenuItem>
-                    </StyledSelect>
-                </Box>
+//                         variant="outlined"
+//                     >
+//                         <MenuItem value="Location 1">Location 1</MenuItem>
+//                         <MenuItem value="Location 2">Location 2</MenuItem>
+//                         <MenuItem value="Location 3">Location 3</MenuItem>
+//                     </StyledSelect>
+//                 </Box>
 
-                {/* Tabs */}
-                <Box mb={4}>
-                    <Tabs
-                        value={selectedTab}
-                        onChange={handleTabChange}
-                        variant="fullWidth"
-                        centered
-                        aria-label="Analytics Tabs"
-                    >
-                        <StyledTab label="Overview" />
-                        <StyledTab label="Booking Utilization" />
-                        <StyledTab label="Analytics" />
-                    </Tabs>
-                </Box>
+//                 {/* Tabs */}
+//                 <Box mb={4}>
+//                     <Tabs
+//                         value={selectedTab}
+//                         onChange={handleTabChange}
+//                         variant="fullWidth"
+//                         centered
+//                         aria-label="Analytics Tabs"
+//                     >
+//                         <StyledTab label="Overview" />
+//                         <StyledTab label="Booking Utilization" />
+//                         <StyledTab label="Analytics" />
+//                     </Tabs>
+//                 </Box>
 
-                {/* Tab Content */}
-                <StyledBox>
-                    {selectedTab === 0 && <Box>Overview Content</Box>}
-                    {selectedTab === 1 && <Box>Booking Utilization Content</Box>}
-                    {selectedTab === 2 && <Box>Analytics Content</Box>}
-                </StyledBox>
-            </Container>
+//                 {/* Tab Content */}
+//                 <StyledBox>
+//                     {selectedTab === 0 && <Box>Overview Content</Box>}
+//                     {selectedTab === 1 && <Box>Booking Utilization Content</Box>}
+//                     {selectedTab === 2 && <Box>Analytics Content</Box>}
+//                 </StyledBox>
+//             </Container>
+//         </Box>
+//     );
+// };
+
+// export default Analytics;
+// -----------------------------------------------------------------
+
+import React from "react";
+import { useState,useEffect } from "react";
+import axios from "axios";
+import { Grid, Paper, Typography, Box, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import {
+  AccessTime,
+  EventAvailable,
+  People,
+  PieChart,
+  BarChart,
+} from "@mui/icons-material";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+
+const Analytics: React.FC = () => {
+  const [bookingCount, setBookingCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    axios.get('/api/bookings/count')
+      .then(response => {
+        setBookingCount(response.data.data);
+      })
+      .catch(error => {
+        console.error('Error fetching booking count:', error);
+      });
+  }, []);
+  const overviewItems = [
+    { title: "All Bookings", value: bookingCount !== null ? bookingCount : "Loading...", icon: <EventAvailable fontSize="large" sx={{ color: '#3182CE' }} /> },
+    { title: "Available Seats", value: "230", icon: <People fontSize="large" sx={{ color: '#38A169' }} /> },
+    { title: "Average Desk Hours", value: "7 Hours", icon: <AccessTime fontSize="large" sx={{ color: '#DD6B20' }} /> },
+    { title: "Booking Rate", value: "75%", icon: <PieChart fontSize="large" sx={{ color: '#D69E2E' }} /> },
+    { title: "Booked Seats", value: "120", icon: <EventAvailable fontSize="large" sx={{ color: '#3182CE' }} /> },
+    { title: "Utilization Rate", value: "75%", icon: <BarChart fontSize="large" sx={{ color: '#E53E3E' }} /> },
+  ];
+
+  const Notif = [
+    { title: "Notifications", value: "0 Pending", icon: <ArrowRightAltIcon fontSize="large" sx={{ color: '#718096' }} /> },
+  ];
+
+  // Handle location change
+  const [location, setLocation] = React.useState<string>('Techno Park Phase I - Gayathri Building');
+
+  const handleLocationChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setLocation(event.target.value as string);
+  };
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
+      <Box sx={{ mb: 4 }}>
+        {/* Header Section */}
+        <Typography variant="h3" sx={{ mb: 2, color: "#2D3748", fontWeight: 700 }}>
+          Dashboard & Analytics
+        </Typography>
+        {/* <Typography variant="h6" sx={{ mb: 2, color: "#2D3748", fontWeight: 500 }}>
+          Analytics
+        </Typography> */}
+        
+        {/* Location Dropdown */}
+        <FormControl fullWidth>
+          <InputLabel id="location-select-label">Location</InputLabel>
+          <Select
+            labelId="location-select-label"
+            id="location-select"
+            value={location}
+            onChange={handleLocationChange}
+            sx={{ mb: 3 }}
+          >
+            <MenuItem value="Techno Park Phase I - Gayathri Building">Techno Park Phase I - Gayathri Building</MenuItem>
+            <MenuItem value="Techno Park Phase I - Thejaswini Building">Techno Park Phase I - Thejaswini Building</MenuItem>
+            {/* Add more options here if needed */}
+          </Select>
+        </FormControl>
+      </Box>
+      
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: 'column', md: 'row' } }}>
+          <Grid container spacing={3} sx={{ flex: 1 }}>
+            {overviewItems.map((item, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    borderRadius: 2,
+                    height: '50%',
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+                    },
+                  }}
+                >
+                  <Box>
+                    <Typography sx={{ color: "#2D3748", fontSize: 14, fontWeight: 500 }}>
+                      {item.title}
+                    </Typography>
+                    <Typography sx={{ color: "#1A202C", fontSize: 24, fontWeight: 700 }}>
+                      {item.value}
+                    </Typography>
+                  </Box>
+                  {item.icon}
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+          <Box
+            sx={{
+              width: { xs: '100%', md: 320 },
+              ml: { xs: 0, md: 4 },
+              mt: { xs: 4, md: 0 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: '100%',
+            }}
+          >
+            {Notif.map((item, index) => (
+              <Paper
+                key={index}
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderRadius: 2,
+                  flexGrow: 1,
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+                  },
+                }}
+              >
+                <Box>
+                  <Typography sx={{ color: "#2D3748", fontSize: 18, fontWeight: 500, borderBottom: '2px solid #CBD5E0', pb: 1 }}>
+                    {item.title}
+                  </Typography>
+                  <Typography sx={{ color: "#1A202C", fontSize: 22, fontWeight: 700, mt: 1 }}>
+                    {item.value}
+                  </Typography>
+                </Box>
+                {item.icon}
+              </Paper>
+            ))}
+          </Box>
         </Box>
-    );
+
+        {/* Attendance Log Card */}
+        <Box mt={4}>
+          <Paper
+            sx={{
+              p: 3,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderRadius: 2,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+              },
+            }}
+          >
+            <Box>
+              <Typography sx={{ color: "#2D3748", fontSize: 18, fontWeight: 500, borderBottom: '2px solid #CBD5E0', pb: 1 }}>
+                No Show Log
+              </Typography>
+              <Typography sx={{ color: "#1A202C", fontSize: 22, fontWeight: 700, mt: 1 }}>
+                View detailed log of Login records
+              </Typography>
+            </Box>
+            <ArrowRightAltIcon fontSize="large" sx={{ color: '#718096' }} />
+          </Paper>
+        </Box>
+      </Box>
+    </Box>
+  );
 };
 
 export default Analytics;

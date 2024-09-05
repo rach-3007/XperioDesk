@@ -9,7 +9,7 @@ import LoginPage from "./Pages/LoginPage";
 import UserViewAllBookingsPage from "./Pages/UserViewAllBookingsPage";
 import DashboardPage from "./Pages/DashboardPage";
 import AnalyticsPage from "./Pages/AnalyticsPage";
-// import ReportsPage from "./Pages/ReportsPage";
+import ReportsPage from "./Pages/ReportsPage";
 import SettingsPage from "./Pages/SettingsPage";
 // import NotificationsPage from "./Pages/NotificationsPage";
 import OfficesPage from "./Pages/OfficesPage";
@@ -43,7 +43,7 @@ const AppContent = () => {
           {/* Route to the Dashboard Page */}
           <Route path="/home" element={<DashboardPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
-          <Route path="/reports" element={<UserBookDesk />} />
+          <Route path="/reports" element={<ReportsPage />} />
           {/* <Route path="/notifications" element={<NotificationsPage />} /> */}
           <Route path="/assign-role" element={<AssignRolePage />} />
           <Route path="/book-desk" element={<BookDesk />} />

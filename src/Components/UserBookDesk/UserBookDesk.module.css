@@ -1,5 +1,8 @@
 /* UserBookDesk.module.css */
- 
+ .body{
+    background-color: #f7f7f7;
+  
+ }
 .container {
     font-family: Arial, sans-serif;
     color: #333;

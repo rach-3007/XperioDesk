@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import Draggable from 'react-draggable';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-
-
+import conerenceroom from '../../assets/conferenceroom.png'
+import cabin from '../../assets/cabin4.png'
 // import DeleteIcon from '@mui/icons-material/Delete';
 import RotateRightIcon from '@mui/icons-material/RotateRight';
 
@@ -100,16 +100,16 @@ const Seat = ({style,backrestStyle, seatAreaStyle, onClick }) => {
 };
 
 // Rectangle Background
-const RectangleBackgroundConf = styled(Box)({
-  position: 'relative',
-  height: '150px', // Height for the background
-  width: '100px', // Width for the background
-  borderRadius: '4px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  margin: '4px',
-});
+// const RectangleBackgroundConf = styled(Box)({
+//   position: 'relative',
+//   height: '150px', // Height for the background
+//   width: '100px', // Width for the background
+//   borderRadius: '4px',
+//   display: 'flex',
+//   justifyContent: 'center',
+//   alignItems: 'center',
+//   margin: '4px',
+// });
 const RectangleBackgroundCab = styled(Box)({
   position: 'relative',
   height: '100px', // Height for the background
@@ -123,8 +123,12 @@ const RectangleBackgroundCab = styled(Box)({
 
 // Cabin Component
 const Cabin = styled(RectangleBackgroundCab)({
-  backgroundColor: '#2D3748', // Background color for Cabin
-});
+  backgroundImage: `url(${cabin})`, // Use the imported image directly
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  width: '130px',
+  height: '100px',});
 
 const CabinIcon = styled(LocationOnIcon)({
   fontSize: '48px', // Medium-large size
@@ -133,28 +137,46 @@ const CabinIcon = styled(LocationOnIcon)({
 });
 
 // Conference Room Component
-const ConferenceRoom = styled(RectangleBackgroundConf)({
-  backgroundColor: '#4A5568', // Background color for Conference Room
+const ConferenceRoom = styled(Box)({
+  backgroundImage: `url(${conerenceroom})`, // Use the imported image directly
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  width: '200px',
+  height: '100px',
 });
+
+
 
 const ConferenceRoomIcon = styled(LocationOnIcon)({
   fontSize: '90px', // Large size
   color: '#FFA500', // Orange color
   position: 'absolute',
+  
 });
 
 // Partition Component
 const Partition = styled(Box)({
-  backgroundColor: '#2C5282',
-  height: '5px',
+  backgroundColor: '#E0D7D2', // Neutral beige/taupe color for the wall
+  height: '5px', 
   width: '170px',
   borderRadius: '4px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   color: '#FAFAFA',
-  margin: '4px',
+  margin: '0px',
+  boxShadow: `
+    inset 0 4px 8px rgba(0, 0, 0, 0.2), // Softer inner shadow for a neutral wall
+    0 6px 10px rgba(0, 0, 0, 0.1), // Lighter outer shadow for 3D effect
+    0 7px 9px rgba(255, 255, 255, 0.2) // Subtle light reflection on top
+  `,
+  transform: 'perspective(9px) rotateX(18deg) rotateY(1deg)',
+  background: 'linear-gradient(145deg, #F5F3F2, #E0D7D2, #D1C9C2)', // Lighter gradient for a softer look
+  borderTop: '2px solid rgba(255, 255, 255, 0.4)', // Light top border for soft highlight
+  borderBottom: '2px solid rgba(0, 0, 0, 0.1)', // Softer bottom border for subtle shadow
 });
+
 
 // Entry Point Component
 const EntryPointContainer = styled(Box)({

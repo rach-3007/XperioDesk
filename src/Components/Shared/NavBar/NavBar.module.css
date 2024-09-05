@@ -5,12 +5,13 @@
   background-color: #0f172a;
   padding: 0 20px;
   height: 60px;
-  width: 100vw;
+  width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
 }
+
 .logo {
   grid-column: 1 / 2;
   font-family: "Open Sans", sans-serif;
@@ -33,14 +34,13 @@
 
 .navLink:hover {
   color: #fefefe;
-
   text-decoration: underline;
 }
 
 .profile {
   display: flex;
   align-items: center;
-  margin-right: 70px; /* Adjust margin to shift the profile container left */
+  margin-right: 70px;
 }
 
 .username {
@@ -48,8 +48,46 @@
   color: #fefefe;
 }
 
-.profile-icon {
+.profileIcon {
   color: #fefefe;
   font-size: 30px;
-  margin-right: -40px; /* Move the icon a bit to the left */
+  margin-right: -40px;
+}
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbarRight {
+    display: none; 
+  }
+
+  .menuIcon {
+    display: block;
+    color: #fefefe;
+    font-size: 30px;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+
+  .dropdownMenu {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: #0f172a;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    z-index: 1001;
+  }
+
+  .dropdownMenu.active {
+    display: flex; /* Show dropdown menu when active */
+  }
+
+  .navLink {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
 }

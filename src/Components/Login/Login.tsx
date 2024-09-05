@@ -34,6 +34,8 @@ const Login: React.FC = () => {
         localStorage.setItem("role_id", user.role_id.toString());
         localStorage.setItem("du_id", user.du_id.toString());
         localStorage.setItem("designation", user.designation);
+        localStorage.setItem("user_id", user.id);
+
   
         // Redirect based on role_id
         if (user.role_id === 1) {

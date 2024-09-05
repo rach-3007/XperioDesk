@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { Collapse } from "@mui/material";
-
+import axiosInstance from "../../Config/AxiosConfig";
 import {
   Box,
   TextField,
@@ -49,6 +49,9 @@ interface Booking {
 }
 
 const Reports: React.FC = () => {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  // const [bookings, setBookings] = useState<BookingType[]>([]);
+ 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -60,6 +63,40 @@ const Reports: React.FC = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
   const navigate = useNavigate();
+  useEffect(() => {
+    // Fetch bookings data from backend
+    const fetchBookings = async () => {
+      try {
+        const response = await axiosInstance.get('/admin/users');
+        const users = response.data.data;
+      
+      
+        // Assuming you have another API endpoint to fetch each user's bookings
+        const bookingsPromises = users.map(async (user: any) => {
+          const bookingResponse = await axiosInstance.get(`/admin/users/${user.id}/bookings`);
+          return bookingResponse.data.data.map((booking: any) => ({
+            id: booking.id,
+            employeeName: user.name,
+            expId: user.id,
+            seatNumber: booking.seatNumber,
+            office: booking.office,
+            dateOfBooking: booking.dateOfBooking,
+            bookedBy: user.id,
+            bookedFor: booking.bookedFor,
+            loginStatus: "", // To be populated later
+            status: "", // To be populated later
+          }));
+        });
+
+        const bookingsData = await Promise.all(bookingsPromises);
+        setBookings(bookingsData.flat());
+      } catch (error) {
+        console.error("Error fetching bookings", error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     event?.preventDefault();
@@ -250,37 +287,40 @@ const Reports: React.FC = () => {
               </TableCell>
               <TableCell>Booked Seat</TableCell>
               <TableCell>Office</TableCell>
-              <TableCell>Date</TableCell>
+              <TableCell>Booked From Date</TableCell>
+              <TableCell>Booked till Date</TableCell>
               <TableCell>Login Status</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedBookings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((booking) => (
-              <TableRow
-                hover
-                key={booking.id}
-                onClick={() => handleRowClick(booking)}
-              >
-                <TableCell>{booking.employeeName}</TableCell>
-                <TableCell>{booking.expId}</TableCell>
-                <TableCell>{booking.seatNumber}</TableCell>
-                <TableCell>{booking.office}</TableCell>
-                <TableCell>{new Date(booking.dateOfBooking).toLocaleDateString()}</TableCell>
-                <TableCell>{getLoginStatusIcon(booking.loginStatus)}</TableCell>
-                <TableCell>{getStatusIcon(booking.status)}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => navigate(`/edit-booking/${booking.id}`)}>
-                    <Edit />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+  {sortedBookings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((booking) => (
+    <TableRow
+      hover
+      key={booking.id}
+      onClick={() => handleRowClick(booking)}
+    >
+      <TableCell>{booking.employeeName}</TableCell>
+      <TableCell>{booking.expId}</TableCell>
+      <TableCell>{booking.seatNumber}</TableCell>
+      <TableCell>{booking.office}</TableCell>
+      <TableCell>{new Date(booking.dateOfBooking).toLocaleDateString()}</TableCell>
+      <TableCell>{/* Placeholder for the `dateOfBookingtill` */}</TableCell>
+      <TableCell>{getLoginStatusIcon(booking.loginStatus)}</TableCell>
+      <TableCell>{getStatusIcon(booking.status)}</TableCell>
+      <TableCell>
+        <IconButton onClick={() => navigate(`/edit-booking/${booking.id}`)}>
+          <Edit />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
         </Table>
       </TableContainer>
-
+      <Legend/>
       {/* Pagination */}
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
