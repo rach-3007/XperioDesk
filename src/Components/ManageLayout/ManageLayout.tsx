@@ -242,7 +242,7 @@ const ManageLayout: React.FC = () => {
             />
           </label>
         </div>
-        <div className={styles.inputLabel}>
+        {/* <div className={styles.inputLabel}>
           <label>
             Rows:
             <input
@@ -265,16 +265,16 @@ const ManageLayout: React.FC = () => {
               placeholder="Enter seats per row"
             />
           </label>
-        </div>
+        </div> */}
         <button className={styles.addButton} onClick={() => addElement("seat")}>
           Add Seat
         </button>
-        <button
+        {/* <button
           className={styles.addButton}
           onClick={() => addRowsOfSeats()}
         >
           Add Rows of Seats
-        </button>
+        </button> */}
         <button className={styles.addButton} onClick={() => addElement("cabin")}>
           Add Cabin
         </button>

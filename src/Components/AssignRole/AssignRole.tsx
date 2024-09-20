@@ -8,7 +8,7 @@ import HeaderBarAdmin from "../Shared/HeaderBarAdmin/HeaderBarAdmin";
 
 const AssignRole: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const username = localStorage.getItem("name") || "User";
+  const username = localStorage.getItem("Amal") || "Amal";
   return (
     <Box sx={{ display: "flex", width: "83vw", overFlowX: "hidden" }}>
       <Box sx={{display:'flex',flexDirection:'column', width: "98.6vw",mb:'10px'}}>

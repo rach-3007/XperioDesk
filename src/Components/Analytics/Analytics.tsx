@@ -24,7 +24,7 @@ const Analytics: React.FC = () => {
       });
   }, []);
   const overviewItems = [
-    { title: "All Bookings", value: bookingCount !== null ? bookingCount : "Loading...", icon: <EventAvailable fontSize="large" sx={{ color: '#3182CE' }} /> },
+    { title: "All Bookings", value: "88", icon: <EventAvailable fontSize="large" sx={{ color: '#3182CE' }} /> },
     { title: "Available Seats", value: "230", icon: <People fontSize="large" sx={{ color: '#38A169' }} /> },
     { title: "Average Desk Hours", value: "7 Hours", icon: <AccessTime fontSize="large" sx={{ color: '#DD6B20' }} /> },
     { title: "Booking Rate", value: "75%", icon: <PieChart fontSize="large" sx={{ color: '#D69E2E' }} /> },

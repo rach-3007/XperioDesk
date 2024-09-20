@@ -113,7 +113,7 @@ const MyBookings: React.FC = () => {
         >
           Seats
         </Typography>
-        <Grid container spacing={3} sx={{ mt: 2 }}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
           {bookings.map((booking) => (
             <Grid item xs={12} sm={6} md={6} key={booking.id}>
               <Card sx={{ borderRadius: 2, boxShadow: 1, py: 1 , px: 5 }}>

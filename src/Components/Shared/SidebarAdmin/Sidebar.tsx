@@ -25,7 +25,7 @@ const Sidebar: React.FC = () => {
     
     // { text: 'Edit Layout', icon: <DeskIcon sx={{ color: 'gray' }} />, path: '/edit-layout' },
     { text: 'Offices', icon: <OfficeIcon sx={{ color: 'gray' }} />, path: '/offices' },
-    { text: 'Settings', icon: <SettingsIcon sx={{ color: 'gray' }} />, path: '/settings' },
+    // { text: 'Settings', icon: <SettingsIcon sx={{ color: 'gray' }} />, path: '/settings' },
     
   ];
   

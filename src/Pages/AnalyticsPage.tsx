@@ -1,4 +1,5 @@
 import Analytics from "../Components/Analytics/Analytics"
+import Graphs from "../Components/Analytics/Graphs"
 
 
 
@@ -11,6 +12,7 @@ const AnalyticsPage = () => {
     <div>
       
       <Analytics/>
+      
     </div>
     </>
   )

@@ -51,8 +51,8 @@ const BookDesk = () => {
   const Legend = () => (
     <div
       style={{
-        position: "relative",
-        top: 40,
+        position: "absolute",
+        top:40,
         left: 0,
         padding: "10px",
         backgroundColor: "white",
@@ -226,11 +226,15 @@ const BookDesk = () => {
       </select>
       
 </div>
-<Legend></Legend>
-      {layout ? (
-        layout.original?.layout_entities?.map((entity) => renderEntity(entity)) || (
-          <p>No entities available for this layout.</p>
-        )
+
+{layout ? (
+        <>
+          {layout.original?.layout_entities?.map((entity) =>
+            renderEntity(entity)
+          ) || <p>No entities available for this layout.</p>}
+          {/* Render Legend after the layout loads */}
+          <Legend />
+        </>
       ) : (
         <p>Loading layout...</p>
       )}

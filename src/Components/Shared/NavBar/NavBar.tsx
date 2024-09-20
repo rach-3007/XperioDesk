@@ -4,7 +4,7 @@ import { AccountCircle } from "@mui/icons-material";
 import styles from "./NavBar.module.css";
 
 const NavBar: React.FC = () => {
-  const username = localStorage.getItem('name') || "User";
+  const username = localStorage.getItem('Sethu') || "Sethu";
  
 
  

@@ -93,7 +93,7 @@ const Offices: React.FC = () => {
         }}
       >
         <Grid container spacing={3} justifyContent="center">
-          {offices.map((office) => (
+          {/* {offices.map((office) => (
             <Grid item xs={12} sm={6} md={4} key={office.id}>
               <Card
                 sx={{
@@ -146,7 +146,7 @@ const Offices: React.FC = () => {
                 </CardContent>
               </Card>
             </Grid>
-          ))}
+          ))} */}
 
           {/* Card to add a new office */}
           <Grid item xs={12} sm={6} md={4}>
@@ -156,11 +156,13 @@ const Offices: React.FC = () => {
                 padding: 2,
                 borderRadius: "20px",
                 height: "200px",
+                width:"200px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
                 backgroundColor: "#f0f0f0",
                 cursor: "pointer",
+                mb:20
               }}
               onClick={handleOpenDrawer} // Open the drawer when clicked
             >

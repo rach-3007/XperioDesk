@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Collapse } from "@mui/material";
 import {
   Box,
   TextField,
@@ -16,6 +15,7 @@ import {
   Typography,
   Paper,
   Tooltip,
+  Button,
 } from "@mui/material";
 import Edit from "@mui/icons-material/Edit";
 import {
@@ -28,27 +28,34 @@ import {
 } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
  
 // Interface to define the structure of booking data
 interface Booking {
   employee_id: number;
   employee_name: string;
-  booked_seat: string;
+  seat: string;
   office: string;
   start_date: string;
   end_date: string;
+  booking_id: number;
+  deleted_at: string | null; // Can be null if not deleted
 }
  
 const Reports: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [datePickerAnchorEl, setDatePickerAnchorEl] = useState<null | HTMLElement>(null);
+  const [datePickerAnchorEl, setDatePickerAnchorEl] =
+    useState<null | HTMLElement>(null);
   const [currentColumn, setCurrentColumn] = useState<string>("");
   const [filters, setFilters] = useState<Partial<Booking>>({});
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<keyof Booking>("employee_id");
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+    null,
+    null,
+  ]);
  
   const [bookingsData, setBookingsData] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,17 +63,57 @@ const Reports: React.FC = () => {
  
   const navigate = useNavigate();
  
+  const handleCancelBooking = async (booking_Id: number) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      await axios.post("http://127.0.0.1:8000/api/admin/cancel-booking", {
+        booking_id: booking_Id,
+      },
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token
+          "Content-Type": "application/json",
+        },
+      });
+ 
+      // Update the bookingsData state after successful cancellation
+      setBookingsData(
+        bookingsData.map((booking) =>
+          booking.booking_id === booking_Id
+            ? { ...booking, deleted_at: new Date().toISOString() }
+            : booking
+        )
+      );
+ 
+      alert("Booking canceled successfully.");
+    } catch (error) {
+      console.error("Error canceling booking:", error);
+      alert("Failed to cancel the booking.");
+    }
+  };
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/admin/bookings-details');
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/admin/bookings-details",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Include the access token
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const result = await response.json();
         setBookingsData(result.data.original); // Handle nested data
       } catch (err) {
-        setError('Error fetching booking data');
+        setError("Error fetching booking data");
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -76,12 +123,17 @@ const Reports: React.FC = () => {
     fetchData();
   }, []);
  
-  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handlePageChange = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
     event?.preventDefault();
     setPage(newPage);
   };
  
-  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -100,7 +152,10 @@ const Reports: React.FC = () => {
     setFilters({ ...filters, [currentColumn]: event.target.value });
   };
  
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Booking) => {
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Booking
+  ) => {
     event?.preventDefault();
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -108,7 +163,9 @@ const Reports: React.FC = () => {
   };
  
   const handleRowClick = (booking: Booking) => {
-    navigate(`/view-or-edit-booking/${booking.employee_id}`, { state: { booking } });
+    navigate(`/view-or-edit-booking/${booking.employee_id}`, {
+      state: { booking },
+    });
   };
  
   const handleDateRangeChange = (index: number, date: Date | null) => {
@@ -155,15 +212,52 @@ const Reports: React.FC = () => {
   const datePickerId = datePickerOpen ? "date-picker-popover" : undefined;
  
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", p: 2,width:"80vw" }}>
-      
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        p: 2,
+        width: "80vw",
+      }}
+    >
+      {/* <Box
+        display="flex"
+        justifyContent="space-between"
+        mb={2}
+        p={2}
+        sx={{
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+          borderRadius: "8px",
+          backgroundColor: "#fff",
+        }}
+      >
+        <TextField label="Search" variant="outlined" sx={{ width: "200px" }} />
+        <Box display="flex" alignItems="center">
+          <Tooltip title="Download Data">
+            <IconButton sx={{ color: "#0F172A" }} size="small">
+              <Download fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Add New Booking">
+            <IconButton sx={{ color: "#0F172A" }} size="small" ml={1}>
+              <Add fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box> */}
  
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h4" sx={{ color: "#0F172A", fontWeight: 600 }}>
           All Bookings
         </Typography>
         <Box display="flex" alignItems="center">
-          <Tooltip title="Filter">
+          {/* <Tooltip title="Filter">
             <IconButton
               sx={{ color: "#0F172A" }}
               onClick={handleFilterClick}
@@ -180,11 +274,17 @@ const Reports: React.FC = () => {
             >
               <CalendarToday fontSize="inherit" />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       </Box>
  
-      <TableContainer component={Paper} sx={{ borderRadius: "8px", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          borderRadius: "8px",
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -195,82 +295,79 @@ const Reports: React.FC = () => {
                   onClick={(event) => handleRequestSort(event, "employee_id")}
                 >
                   Employee ID
+                  {orderBy === "employee_id" ? (
+                    order === "desc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    )
+                  ) : null}
                 </TableSortLabel>
               </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "employee_name"}
-                  direction={orderBy === "employee_name" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "employee_name")}
-                >
-                  Employee Name
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "seat"}
-                  direction={orderBy === "seat" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "seat")}
-                >
-                  Seat
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "office"}
-                  direction={orderBy === "office" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "office")}
-                >
-                  Office
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "start_date"}
-                  direction={orderBy === "start_date" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "start_date")}
-                >
-                  Start Date
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "end_date"}
-                  direction={orderBy === "end_date" ? order : "asc"}
-                  onClick={(event) => handleRequestSort(event, "end_date")}
-                >
-                  End Date
-                </TableSortLabel>
-              </TableCell>
+              <TableCell>Employee Name</TableCell>
+              <TableCell>Seat</TableCell>
+              <TableCell>Office</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>End Date</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedBookings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((booking) => (
-              <TableRow
-                key={booking.employee_id}
-                hover
-                onClick={() => handleRowClick(booking)}
-                sx={{ cursor: "pointer" }}
-              >
-                <TableCell>{booking.employee_id}</TableCell>
-                <TableCell>{booking.employee_name}</TableCell>
-                <TableCell>{booking.seat}</TableCell>
-                <TableCell>{booking.office}</TableCell>
-                <TableCell>{booking.start_date}</TableCell>
-                <TableCell>{booking.end_date}</TableCell>
-              </TableRow>
-            ))}
+            {sortedBookings
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((booking) => (
+                <TableRow
+                  key={booking.booking_id}
+                  onClick={() => handleRowClick(booking)}
+                  hover
+                  sx={{
+                    cursor: "pointer",
+                   
+                  }}
+                >
+                  <TableCell>{booking.employee_id}</TableCell>
+                  <TableCell>{booking.employee_name}</TableCell>
+                  <TableCell>{booking.seat}</TableCell>
+                  <TableCell>{booking.office}</TableCell>
+                  <TableCell>{booking.start_date}</TableCell>
+                  <TableCell>{booking.end_date}</TableCell>
+                  <TableCell>
+                    {booking.deleted_at ? (
+                       <span style={{ color: "red" }}>Booking Canceled</span>
+                    ) : (
+                      <Button
+                      variant="outlined"
+                      sx={{
+                        color: "#001f3f", // Navy blue text color
+                        borderColor: "#001f3f", // Navy blue border color
+                        "&:hover": {
+                          backgroundColor: "#001f3f", // Navy blue background on hover
+                          color: "#fff", // White text on hover
+                        },
+                      }}
+                        onClick={(event) => {
+                          event.stopPropagation(); // Prevent row click event
+                          handleCancelBooking(booking.booking_id);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+ 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={filteredBookings.length}
-        rowsPerPage={rowsPerPage}
+        count={bookingsData.length}
         page={page}
         onPageChange={handlePageChange}
+        rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleRowsPerPageChange}
+        sx={{ mt: 2 }}
       />
  
       <Popover
@@ -284,13 +381,12 @@ const Reports: React.FC = () => {
         }}
       >
         <Box p={2}>
-          <Typography variant="h6" mb={1}>
-            Filter by {currentColumn}
+          <Typography variant="body1" sx={{ mb: 1 }}>
+            Filter by {currentColumn}:
           </Typography>
           <TextField
-            label={`Filter by ${currentColumn}`}
+            label={`Enter ${currentColumn}`}
             variant="outlined"
-            fullWidth
             onChange={handleFilterChange}
           />
         </Box>
@@ -307,20 +403,18 @@ const Reports: React.FC = () => {
         }}
       >
         <Box p={2}>
-          <Typography variant="h6" mb={2}>
-            Select Date Range
+          <Typography variant="body1" sx={{ mb: 1 }}>
+            Select Date Range:
           </Typography>
           <DatePicker
             label="Start Date"
             value={dateRange[0]}
             onChange={(date) => handleDateRangeChange(0, date)}
-            renderInput={(params) => <TextField {...params} />}
           />
           <DatePicker
             label="End Date"
             value={dateRange[1]}
             onChange={(date) => handleDateRangeChange(1, date)}
-            renderInput={(params) => <TextField {...params} />}
           />
         </Box>
       </Popover>
